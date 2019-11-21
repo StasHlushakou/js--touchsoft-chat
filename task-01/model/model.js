@@ -34,6 +34,42 @@ function writeToMessageOutput(from, message) {
 
 }
 
-function sendToServer(str) {
-	setTimeout(writeToMessageOutput, 15000, "Bot", "Ответ на: " + str.toUpperCase());
+/*async*/ function sendToServer(str) {
+	
+	/*
+	let msg = {};
+	msg.text = str;
+	let url = `http://localhost:8080/chatJS`;
+	let response = await fetch(url,{
+  		method: 'POST',
+  		headers: {
+    		'Content-Type': 'application/json;charset=utf-8'
+  		},
+  		body: JSON.stringify(msg)
+	});
+	if (response.ok) { 
+	  let json = await response.json();
+	  writeToMessageOutput("Bot",json.text);
+	} else {
+	  console.log("Ошибка HTTP: " + response.status);
+	}
+	*/
+	
+	
+	
+	let msg = {};
+	msg.text = str;
+	let xhr = new XMLHttpRequest();
+	xhr.open("POST", `http://localhost:8080/chatJS`)
+	xhr.setRequestHeader('Content-Type', 'application/json;charset=utf-8');
+	xhr.send(JSON.stringify(msg));
+	xhr.onload = function() {
+	  	let json = JSON.parse(xhr.response);
+	 	writeToMessageOutput("Bot",json.text);
+	};
+	xhr.onerror = function() { // происходит, только когда запрос совсем не получилось выполнить
+	  	console.log(`Ошибка соединения`);
+	};
+	
+
 }
