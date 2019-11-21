@@ -37,11 +37,14 @@ public class MainServlet extends HttpServlet {
 
         Message msgReq = new Gson().fromJson(req.getReader(), Message.class);
         System.out.println(msgReq.getText());
-        Message msgResp = new Message(msgReq.getText().toUpperCase());
+
+        Message msgResp = new Message("Ответ на: \"" +msgReq.getText().toUpperCase() + "\"");
         String employeeJsonString = this.gson.toJson(msgResp);
+
         System.out.println(employeeJsonString);
+
         try {
-            Thread.sleep(3000);
+            Thread.sleep(15000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
