@@ -1,13 +1,14 @@
 let newDiv = document.createElement('div');
 
-newDiv.id = "chat";
-newDiv.innerHTML = `<h2 id="heading">chat</h2>
+newDiv.innerHTML = `<div id="chatWindow" class="touchSoftChat">
+    <h2 id="heading">chat</h2>
     <input id="minimizeBtn" type="button" value="[]" onclick="minimizeButton()">
     <div id="chatMinimize" display="none" hidden = "false" >
         <textarea id="messageOutput" disabled="disabled" ></textarea>
         <textarea id="message" rows="3" cols="40"></textarea>
         <input id="btnSend" type="button" value="Send" onclick="sendButton()">
-    </div>`;
+    </div>
+</div>`;
 
 document.body.append(newDiv);
 
@@ -17,11 +18,8 @@ function loadCss(href) {
     link.href = href;
     document.head.appendChild(link);
 }
-loadCss("https://raw.githack.com/StasHlushakou/js--touchsoft-chat/master/task-01/model/model.css");
+loadCss("https://rawcdn.githack.com/StasHlushakou/js--touchsoft-chat/0cc5b7e0a4f6f75d50b17c5b80d0b04392a1e107/task-01/model/model.css");
         
-
-
-
 if (sessionStorage.getItem('isMinimize') == null){
     sessionStorage.setItem('isMinimize', true);
 } else{
@@ -55,36 +53,9 @@ function writeToMessageOutput(from, message) {
     let date = new Date();
     messageOutput.value += date.getHours() + ":" + date.getMinutes() + " " + from + " : " + message + "\r\n";
     sessionStorage.setItem('messages', messageOutput.value);
-
 }
-/*
 
-    Для использования fetch() вместо XHR раскомментировать
-    async в описании метода sendToServer() и код метода заменить на тот,
-    который в комментарии.
- */
-
-/*async*/ function sendToServer(str) {
-    
-    /*
-    let msg = {};
-    msg.text = str;
-    let url = `http://localhost:8080/chatJS`;
-    let response = await fetch(url,{
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(msg)
-    });
-    if (response.ok) { 
-      let json = await response.json();
-      writeToMessageOutput("Bot",json.text);
-    } else {
-      console.log("Ошибка HTTP: " + response.status);
-    }
-    */
-    
+function sendToServer(str) {    
     let msg = {};
     msg.text = str;
     let xhr = new XMLHttpRequest();
@@ -98,5 +69,4 @@ function writeToMessageOutput(from, message) {
     xhr.onerror = function() { 
         console.log(`Ошибка соединения`);
     };
-    
 }
