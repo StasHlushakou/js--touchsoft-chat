@@ -1,99 +1,97 @@
-let _chatTitle = "Chat";
-let _botName = "Bot";
-let _chatURL = "http://localhost:8080/chatJS";
-let _CSSClass = "model.css";
-let _position = "right";
-let _allowMinimize = false;
-let _allowDrag = false;
-let _requireName = false;
-let _showTime = false;
-let _connectType = "XHR";
+let $chatTitle = "Chat";
+let $botName = "Bot";
+let $chatURL = "http://localhost:8080/chatJS";
+let $CSSClass = "model.css";
+let $position = "right";
+let $allowMinimize = false;
+let $allowDrag = false;
+let $requireName = false;
+let $showTime = false;
+let $connectType = "xhr";
 
 
 chatTitle.onchange = function() {
-    _chatTitle = chatTitle.value;
-    alert(_chatTitle);
+    $chatTitle = chatTitle.value;
+    alert($chatTitle);
 };
 
 botName.onchange = function() {
-    _botName = botName.value;
-    alert(_botName);
+    $botName = botName.value;
+    alert($botName);
 
-    //alert(botName.value);
 };
 
 chatURL.onchange = function() {
-    _chatURL = chatURL.value;
-    alert(_chatURL);
+    $chatURL = chatURL.value;
+    alert($chatURL);
 
-    //alert(chatURL.value);
 };
 
 CSSClass.onchange = function() {
-    _CSSClass = CSSClass.value;
-    alert(_CSSClass);
+    $CSSClass = CSSClass.value;
+    alert($CSSClass);
 
-    //alert(CSSClass.value);
 };
 
 //-----------------------------------
 
 position.onchange = function() {
-    _position = position.value;
-    alert(_position);
+    $position = position.value;
+    alert($position);
 
-    //alert(position.value);
 };
 
 //-----------------------------------
 
 allowMinimize.onchange = function() {
-    _allowMinimize = allowMinimize.checked;
-    alert(_allowMinimize + typeOf(_allowMinimize));
+    $allowMinimize = allowMinimize.checked;
+    alert($allowMinimize);
 
-    alert(allowMinimize.checked);
 };
 
 allowDrag.onchange = function() {
-    _chatTitle = chatTitle.value;
-    alert(_chatTitle);
+    $allowDrag = allowDrag.checked;
+    alert($allowDrag);
 
-    alert(allowDrag.checked);
 };
 
 requireName.onchange = function() {
-    _chatTitle = chatTitle.value;
-    alert(_chatTitle);
+    $requireName = requireName.checked;
+    alert($requireName);
 
-    alert(requireName.checked);
 };
 
 showTime.onchange = function() {
-    _chatTitle = chatTitle.value;
-    alert(_chatTitle);
+    $showTime = showTime.checked;
+    alert($showTime);
 
-    alert(showTime.checked);
 };
 
 //-----------------------------------
 
 useXHR.onchange = function() {
-    _chatTitle = chatTitle.value;
-    alert(_chatTitle);alert(useXHR.value);
-
+    $connectType = useXHR.value;
+    alert($connectType);
 
 };
 
 usefetch.onchange = function() {
-    _chatTitle = chatTitle.value;
-    alert(_chatTitle);
+    $connectType = usefetch.value;
+    alert($connectType);
 
-    alert(usefetch.value);
 };
 
 
 
 
+
+function writeToScriptToConnection() {
+    
+
+
+    scriptToConnection.value += strScriptToConnection;
+
+}
 
 
 

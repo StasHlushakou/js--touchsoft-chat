@@ -1,52 +1,153 @@
-if (sessionStorage.getItem('isMinimize') == null){
-	sessionStorage.setItem('isMinimize', true);
-} else{
-	if (sessionStorage.getItem('isMinimize') == "false"){
-		minimizeButton();
-	} 
+let title = "Chat";
+let botName = "Bot";
+let chatURL = "http://localhost:8080/chatJS";
+let cssClass = "model.css";	//??????
+let position = "right";
+let allowMinimize = true;
+let allowDrag = true;			//??????
+let requireName = true;
+let showTime = false;
+let connectType = "fetch";
+
+// проверка разрешения сворачивания чата и установка чату 
+// необходимого состояния после перезвгрузки страницы
+if (!allowMinimize){
+	chatMinimize.hidden = false;
+	minimizeBtn.disabled = true; 
+	minimizeBtn.value = "-"
+}else{
+	if (sessionStorage.getItem('isHidden') == null){
+		sessionStorage.setItem('isHidden', true);
+	} else{
+		if (sessionStorage.getItem('isHidden') == "false"){
+			minimizeButton();
+		} 
+	}
 }
 
+// заполнение формы вывода после перезагрузки страницы
 if (sessionStorage.getItem('messages') == null){
 	sessionStorage.setItem('messages', "");
 } else{
 	messageOutput.value = sessionStorage.getItem('messages');
 }
 
+// проверка привязки(right/left)
+heading.textContent = title;
+if (position == "left"){
+	chatWindow.style.left="5px";
+}
+
+//выбор способа отправки сообщений на сервер
+let sendToServer = null;
+if (connectType == "xhr"){
+	sendToServer = useXHR;
+} else{
+	sendToServer = useFetch;
+}
+
+// просьба ввести имя
+let userName = "";
+if (requireName){
+	if (sessionStorage.getItem('userName') == null){
+		sessionStorage.setItem('userName', "");
+		writeToMessageOutput("", "Please, enter your name.");
+	} else{
+		userName = sessionStorage.getItem('userName');
+	}
+}
+
+//установка нужного положения при обновлении страницы
+if(allowDrag){
+	if (sessionStorage.getItem('dragLeft') == null){
+		sessionStorage.setItem('dragLeft', 'no');
+		sessionStorage.setItem('dragTop', 'no');
+	} else{
+		if (sessionStorage.getItem('dragLeft') != 'no'){
+			chatWindow.style.position = 'fixed';
+			chatWindow.style.bottom = "auto";
+			chatWindow.style.right = "auto";
+			chatWindow.style.left = sessionStorage.getItem('dragLeft');
+			chatWindow.style.top = sessionStorage.getItem('dragTop');
+		}
+	}
+}
+
+
 function minimizeButton() {
 	chatMinimize.hidden =  !chatMinimize.hidden;
 	minimizeBtn.value = minimizeBtn.value == "-" ? "[]" : "-";
-	sessionStorage.setItem('isMinimize', chatMinimize.hidden);
+	sessionStorage.setItem('isHidden', chatMinimize.hidden);
 }
+
 
 function sendButton() {
 	let msg = message.value;
+    
+    //проверка ввода имени пользователя
+    if (requireName){
+    	if (userName == ""){
+    		if (msg != ""){
+    			userName = msg;
+    			message.value = "";
+    			sessionStorage.setItem('userName', userName);
+    			writeToMessageOutput("", "Your name is " + userName);
+    			return;
+    		} else {
+    			return;
+    		}
+    	}
+    }
+
     if (msg != ""){
     	message.value = "";
     	sendToServer(msg);
-    	writeToMessageOutput("Вы", msg);
+    	if (requireName){
+    		writeToMessageOutput(userName, msg);
+    	} else{
+    		writeToMessageOutput("Вы", msg);
+    	}
     }
 }
 
 function writeToMessageOutput(from, message) {
-    let date = new Date();
-    messageOutput.value += date.getHours() + ":" + date.getMinutes() + " " + from + " : " + message + "\r\n";
+    if (showTime){
+    	let date = new Date();
+    	messageOutput.value += date.getHours() + ":" + date.getMinutes() + " " + from + " : " + message + "\r\n";
+    } else{
+   		messageOutput.value += from + " : " + message + "\r\n";
+
+    }
     sessionStorage.setItem('messages', messageOutput.value);
 
 }
-/*
 
- 	Для использования fetch() вместо XHR раскомментировать
- 	async в описании метода sendToServer() и код метода заменить на тот,
- 	который в комментарии.
- */
 
-/*async*/ function sendToServer(str) {
-	
-	/*
+
+
+
+
+
+function useXHR(str) {
 	let msg = {};
 	msg.text = str;
-	let url = `http://localhost:8080/chatJS`;
-	let response = await fetch(url,{
+	let xhr = new XMLHttpRequest();
+	xhr.open("POST", chatURL)
+	xhr.setRequestHeader('Content-Type', 'application/json;charset=utf-8');
+	xhr.send(JSON.stringify(msg));
+	xhr.onload = function() {
+	  	let json = JSON.parse(xhr.response);
+	 	writeToMessageOutput(botName, json.text);
+	};
+	xhr.onerror = function() { 
+	  	console.log(`Ошибка соединения`);
+	};
+}
+
+async function useFetch(str) {
+	let msg = {};
+	msg.text = str;
+	let response = await fetch(chatURL,{
   		method: 'POST',
   		headers: {
     		'Content-Type': 'application/json;charset=utf-8'
@@ -58,21 +159,69 @@ function writeToMessageOutput(from, message) {
 	  writeToMessageOutput("Bot",json.text);
 	} else {
 	  console.log("Ошибка HTTP: " + response.status);
-	}
-	*/
-	
-	let msg = {};
-	msg.text = str;
-	let xhr = new XMLHttpRequest();
-	xhr.open("POST", `http://localhost:8080/chatJS`)
-	xhr.setRequestHeader('Content-Type', 'application/json;charset=utf-8');
-	xhr.send(JSON.stringify(msg));
-	xhr.onload = function() {
-	  	let json = JSON.parse(xhr.response);
-	 	writeToMessageOutput("Bot", json.text);
-	};
-	xhr.onerror = function() { 
-	  	console.log(`Ошибка соединения`);
-	};
-	
+	}	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if(allowDrag){
+
+	heading.onmousedown = function(event) {
+
+		let shiftX = event.clientX - chatWindow.getBoundingClientRect().left;
+		let shiftY = event.clientY - chatWindow.getBoundingClientRect().top;
+
+		chatWindow.style.position = 'fixed';
+		chatWindow.style.bottom = "auto";
+		chatWindow.style.right = "auto";
+
+		//chatWindow.style.zIndex = 1000;
+		//document.body.append(chatWindow);
+
+		moveAt(event.pageX, event.pageY);
+
+		// переносит мяч на координаты (pageX, pageY),
+		// дополнительно учитывая изначальный сдвиг относительно указателя мыши
+		function moveAt(pageX, pageY) {
+			chatWindow.style.left = pageX - shiftX + 'px';
+			chatWindow.style.top = pageY - shiftY + 'px';
+		}
+
+		function onMouseMove(event) {
+			moveAt(event.pageX, event.pageY);
+		}
+
+		// передвигаем мяч при событии mousemove
+		document.addEventListener('mousemove', onMouseMove);
+
+		// отпустить мяч, удалить ненужные обработчики
+		chatWindow.onmouseup = function() {
+			document.removeEventListener('mousemove', onMouseMove);
+			chatWindow.onmouseup = null;
+			sessionStorage.setItem('dragLeft', chatWindow.style.left); 
+			sessionStorage.setItem('dragTop', chatWindow.style.top);
+
+		};
+	};
+
+
+	heading.ondragstart = function() {
+	  return false;
+	};
+
+}
+
+
+

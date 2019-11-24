@@ -1,7 +1,8 @@
-if (sessionStorage.getItem('isMinimize') == null){
-	sessionStorage.setItem('isMinimize', true);
+
+if (sessionStorage.getItem('isHidden') == null){
+	sessionStorage.setItem('isHidden', true);
 } else{
-	if (sessionStorage.getItem('isMinimize') == "false"){
+	if (sessionStorage.getItem('isHidden') == "false"){
 		minimizeButton();
 	} 
 }
@@ -15,7 +16,7 @@ if (sessionStorage.getItem('messages') == null){
 function minimizeButton() {
 	chatMinimize.hidden =  !chatMinimize.hidden;
 	minimizeBtn.value = minimizeBtn.value == "-" ? "[]" : "-";
-	sessionStorage.setItem('isMinimize', chatMinimize.hidden);
+	sessionStorage.setItem('isHidden', chatMinimize.hidden);
 }
 
 function sendButton() {
