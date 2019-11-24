@@ -187,13 +187,10 @@ if(allowDrag){
 		chatWindow.style.bottom = "auto";
 		chatWindow.style.right = "auto";
 
-		//chatWindow.style.zIndex = 1000;
-		//document.body.append(chatWindow);
 
 		moveAt(event.pageX, event.pageY);
 
-		// переносит мяч на координаты (pageX, pageY),
-		// дополнительно учитывая изначальный сдвиг относительно указателя мыши
+
 		function moveAt(pageX, pageY) {
 			chatWindow.style.left = pageX - shiftX + 'px';
 			chatWindow.style.top = pageY - shiftY + 'px';
@@ -203,10 +200,10 @@ if(allowDrag){
 			moveAt(event.pageX, event.pageY);
 		}
 
-		// передвигаем мяч при событии mousemove
+
 		document.addEventListener('mousemove', onMouseMove);
 
-		// отпустить мяч, удалить ненужные обработчики
+
 		chatWindow.onmouseup = function() {
 			document.removeEventListener('mousemove', onMouseMove);
 			chatWindow.onmouseup = null;

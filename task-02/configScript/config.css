@@ -1,0 +1,9 @@
+#scriptToConnection { 
+	width: 450px; 
+	height: 230px; 
+}
+
+p {
+    margin-block-start: 0;
+    margin-block-end: 0;
+}
