@@ -18,7 +18,7 @@ function loadCss(href) {
     link.href = href;
     document.head.appendChild(link);
 }
-loadCss("model/model.css");
+loadCss("chat.css");
         
 
 // установка заголовка чата
@@ -75,15 +75,13 @@ if(allowDrag){
     };
 }
 
-// просьба ввести имя и его восстановление при перезагрузке
-// страницы
-let userName = "";
-if (requireName){
-    if (sessionStorage.getItem('userName') == null){
+// просьба ввести имя, если оно не установлено
+if (sessionStorage.getItem('userName') == null){
+    if (requireName){
         sessionStorage.setItem('userName', "");
         writeToMessageOutput("", "Please, enter your name.");
-    } else{
-        userName = sessionStorage.getItem('userName');
+    } else {
+        sessionStorage.setItem('userName', "Вы");
     }
 }
 
@@ -128,30 +126,21 @@ function minimizeButton() {
 
 function sendButton() {
     let msg = message.value;
-    
-    // проверка ввода имени пользователя
-    if (requireName){
-        if (userName == ""){
-            if (msg != ""){
-                userName = msg;
-                message.value = "";
-                sessionStorage.setItem('userName', userName);
-                writeToMessageOutput("", "Your name is " + userName);
-                return;
-            } else {
-                return;
-            }
+    //проверка ввода имени пользователя
+    if (sessionStorage.getItem('userName') == ""){
+        if (msg != ""){
+            message.value = "";
+            sessionStorage.setItem('userName', msg);
+            writeToMessageOutput("", "Your name is " + msg);
+            return;
+        } else {
+            return;
         }
     }
-
     if (msg != ""){
         message.value = "";
         sendToServer(msg);
-        if (requireName){
-            writeToMessageOutput(userName, msg);
-        } else{
-            writeToMessageOutput("Вы", msg);
-        }
+        writeToMessageOutput(sessionStorage.getItem('userName'), msg);
     }
 }
 
