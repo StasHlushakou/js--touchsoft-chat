@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+</head>
+<body>
+
+  
+
+  <div id="dashboard">
+    <h2>Operators dashboard</h2>
+    
+    <input id="filter" type="text" placeholder="Filter">
+    
+    
+    
+    <select id="sort">
+          <option value="name">Name</option>
+          <option value="activity">Last activity</option>
+          <option value="id">id</option>
+    </select>
+    
+
+    <select id="userSelect" multiple>
+          <option value="1">User 1</option>
+          <option value="2">User 2</option>
+          <option value="3">User 3</option>
+          <option value="4">User 4</option>
+          <option value="5">User 5</option>
+
+    </select>
+
+
+    <div id="activeUser">
+      <h2>Active user</h2>
+
+      <input id="closeActiveUser" type="button" value="x" onclick="closeActiveUser()">
+
+      <div id="chat" >
+        <h2>Chat</h2>
+        <textarea id="messageOutput" disabled="disabled" ></textarea>
+        <textarea id="message" rows="3" cols="40"></textarea>
+        <input id="btnSend" type="button" value="Send" onclick="sendButton()">
+      </div>
+
+
+      <div id="control">
+        <h2>Control</h2>
+      </div>
+
+    </div>
+
+
+
+    
+      
+
+
+
+
+    </div>
+
+
+  </div>
+  
+
+
+
+
+
+
+  <link href="operator.css" rel="stylesheet">
+  
+
+</body>
+</html>

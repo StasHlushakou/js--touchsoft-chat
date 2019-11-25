@@ -1,0 +1,94 @@
+#dashboard { 
+	background-color: green; 
+	width: 1300px; 
+	height: 580px; 
+	position: relative;
+}
+
+h2{
+	margin-block-start: 0;
+    margin-block-end: 0;
+}
+
+#filter{
+	width: 176px; 
+	height: 19px; 
+	position: absolute;
+	left :10px ; 
+	top : 30px;
+}
+
+#sort{
+	width: 180px; 
+	height: 25px; 
+	position: absolute;
+	left :10px ; 
+	top : 65px;
+}
+
+#userSelect{
+	width: 180px; 
+	height: 470px; 
+	position: absolute;
+	left :10px ; 
+	top : 100px;
+}
+
+#activeUser { 
+	background-color: gray; 
+	width: 1090px; 
+	height: 540px; 
+	position: absolute;
+	left :200px ; 
+	top : 30px;
+}
+
+#closeActiveUser{
+	position : absolute;
+	top : 0px;
+	right : 0px;
+}
+
+
+#chat { 
+	background-color: red; 
+	position: absolute;
+	left :5px ; 
+	top : 30px;
+	width: 500px; 
+	height: 505px; 
+	
+}
+#messageOutput { 
+	width: 484px; 
+	height: 354px; 
+	resize: none;
+	position : absolute;
+	top : 30px;
+	left: 5px
+}
+#message{
+	width: 484px; 
+	height: 54px; 
+	resize: none;
+	position : absolute;
+	left: 5px;
+	bottom : 45px;
+}
+#btnSend{
+	width: 490px; 
+	height: 30px; 
+	position : absolute;
+	left: 5px;
+	bottom : 5px;
+}
+
+
+#control{
+	background-color: yellow; 
+	width: 570px; 
+	height: 505px; 
+	position : absolute;
+	top : 30px;
+	left : 515px;
+}
