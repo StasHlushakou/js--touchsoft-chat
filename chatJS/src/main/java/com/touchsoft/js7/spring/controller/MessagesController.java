@@ -35,4 +35,12 @@ public class MessagesController {
         return  messageRepository.findByUserid(user.getId());
     }
 
+    @PostMapping("/users/unread")
+    public Iterable<Message> getUnreadMessagesByUserID(@RequestBody User user) {
+
+        System.out.println(user.getId());
+        return  messageRepository.findByUseridAndIsRead(user.getId(),false);
+    }
+
+
 }

@@ -9,4 +9,8 @@ public interface MessageRepository extends CrudRepository<Message, Long> {
 
     Iterable<Message> findByUserid(Long userid);
 
+    Iterable<Message> findByUseridAndIsRead(Long userid, boolean isRead);
+
+
+
 }
