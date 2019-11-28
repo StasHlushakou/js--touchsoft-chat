@@ -1,5 +1,5 @@
 package com.touchsoft.js7.servlets;
-
+/*
 import com.google.gson.Gson;
 import com.touchsoft.js7.core.Message;
 
@@ -37,14 +37,11 @@ public class MainServlet extends HttpServlet {
 
         Message msgReq = new Gson().fromJson(req.getReader(), Message.class);
         System.out.println(msgReq.getText());
-
-        Message msgResp = new Message("Ответ на: \"" +msgReq.getText().toUpperCase() + "\"");
+        Message msgResp = new Message(msgReq.getText().toUpperCase());
         String employeeJsonString = this.gson.toJson(msgResp);
-
         System.out.println(employeeJsonString);
-
         try {
-            Thread.sleep(15000);
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -58,4 +55,4 @@ public class MainServlet extends HttpServlet {
 
 
 
-}
+}*/

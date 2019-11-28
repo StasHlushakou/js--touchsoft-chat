@@ -1,5 +1,5 @@
 package com.touchsoft.js7.servlets;
-
+/*
 import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -59,3 +59,4 @@ public class CORSFilter implements Filter {
     }
 
 }
+*/
