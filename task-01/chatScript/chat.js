@@ -8,7 +8,7 @@ TSChat = {
     allowDrag : true,
     requireName : true,
     showTime : true,
-    connectType : "xhr",
+    connectType : "fetch",
 }
 
 init();
@@ -257,25 +257,63 @@ function xhrRequestToServer(method, url, json, func) {
     };
 }
 
-async function fetchRequestToServer(url, type, func, message) {
+async function fetchRequestToServer(method, url, json, func) {
     
-    let response = await fetch(url,{
-        method: type,
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(message)
-    });
-    if (response.ok) { 
-      let jsonResp = await response.json();
-      func(jsonResp);
-      //writeToMessageOutput(TSChat.botName,json.text);
-    } else {
-      console.log("Ошибка HTTP: " + response.status);
-    }   
+	if (method == "GET"){
+		let response = await fetch(url);
+	    if (response.ok) { 
+	      let jsonResp = await response.json();
+	      func(jsonResp);
+	    } else {
+	      console.log("Ошибка HTTP: " + response.status);
+	    }   
+	} else {
+		let response = await fetch(url,{
+	        method: method,
+	        headers: {
+	            'Content-Type': 'application/json;charset=utf-8'
+	        },
+	        body: JSON.stringify(json)
+	    });
+	    if (response.ok) { 
+	      if (func != null){
+	      	let jsonResp = await response.json();
+	      	func(jsonResp);
+	      }
+	      return;
+	      
+	    } else {
+	      console.log("Ошибка HTTP: " + response.status);
+	    }  
+	}
+
+
+
+
+	 
+
+
+
+/*
+    let msg = {};
+	msg.text = str;
+	let url = `http://localhost:8080/chatJS`;
+	
+	let response = await fetch(url,{
+  		method: 'POST',
+  		headers: {
+    		'Content-Type': 'application/json;charset=utf-8'
+  		},
+  		body: JSON.stringify(msg)
+	});
+	if (response.ok) { 
+	  let json = await response.json();
+	  writeToMessageOutput("Bot",json.text);
+	} else {
+	  console.log("Ошибка HTTP: " + response.status);
+	}
+*/
+
+
+    
 }
-
-
-
-
-
