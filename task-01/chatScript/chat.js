@@ -1,18 +1,4 @@
-TSChat = {
-    title : "Chat",
-    botName : "Bot",
-    chatURL : "http://localhost:8080",
-    cssClass : "model.css",
-    position : "right",
-    allowMinimize : true,
-    allowDrag : true,
-    requireName : true,
-    showTime : true,
-    connectType : "fetch",
-}
-
 init();
-
 
 // обработка нажатия кнопки сворачивания
 function minimizeButton() {
@@ -21,10 +7,9 @@ function minimizeButton() {
     sessionStorage.setItem('isMinimize', chatMinimize.hidden);
 }
 
-
 // обработка нажатия кнопки отправки сообщения
 function sendButton() {
-    // проверка ввода имени пользователя и его регистрация
+    // проверка ввода имени пользователя и его регистрация, если требуется
     if (sessionStorage.getItem('userName') == ""){
         if (message.value != ""){
             sessionStorage.setItem('userName', message.value);
@@ -52,7 +37,6 @@ function sendButton() {
     }
 }
 
-
 // запись в поле вывода служебной информации
 function addServiceMessage(str){
 
@@ -79,14 +63,14 @@ function writeToMessageOutput(message) {
 
 // Добавляет все сообщения из массива в поле вывода
 function addHistoryMessages(messagesArr){
-	
+
 	messagesArr.forEach(writeToMessageOutput);
 }
 
 // Загружает историю сообщений переданного пользователя
 function dounloadHistoryMessages(user){
 	
-	sendToServer("POST", TSChat.chatURL + "/messages/users", user, addHistoryMessages);
+	requestToServer("POST", TSChat.chatURL + "/messages/users", user, addHistoryMessages);
 }
 
 // Устанавливает id пользователя, полученного с сервера и запускает загрузку его сообщений
@@ -99,17 +83,85 @@ function setUser(user){
 function regNewUser(username){
 	let user = {};
 	user.name = username;
-	user.botname = TSChat.botname;
-	sendToServer("POST", TSChat.chatURL + "/users", user, setUser);
+	user.botname = TSChat.botName;
+	requestToServer("POST", TSChat.chatURL + "/users", user, setUser);
 }
 
 // Отправить сообщение на сервер
 function sendMessageToServer(message){
 	
-	sendToServer("POST", TSChat.chatURL + "/messages", message, null);
+	requestToServer("POST", TSChat.chatURL + "/messages", message, null);
 }
 
+// реализация отправки запроса на сервер
+function requestToServer(method, url, json, func) {    
+    if (TSChat.connectType == "xhr"){
+    	xhrRequestToServer(method, url, json, func);
+    }else {
+    	fetchRequestToServer(method, url, json, func)
+    }
+}
 
+// функция создания xhr-запроса
+function xhrRequestToServer(method, url, json, func) {    
+    
+    let xhr = new XMLHttpRequest();
+    xhr.open(method, url);
+    xhr.setRequestHeader('Content-Type', 'application/json;charset=utf-8');
+    if (json != null){
+    	xhr.send(JSON.stringify(json));
+    } else{
+    	xhr.send();
+    }
+    xhr.onload = function() {
+        if (func != null){
+	        let jsonResp = JSON.parse(xhr.response);
+	        console.log(jsonResp);
+	        func(jsonResp);
+        }
+    };
+    xhr.onerror = function() { 
+        console.log(`Ошибка соединения`);
+    };
+}
+
+// функция создания fetch-запроса
+async function fetchRequestToServer(method, url, json, func) {
+    
+	if (method == "GET"){
+		let response = await fetch(url);
+	    if (response.ok) { 
+	      let jsonResp = await response.json();
+	      func(jsonResp);
+	    } else {
+	      console.log("Ошибка HTTP: " + response.status);
+	    }   
+	} else {
+		let response = await fetch(url,{
+	        method: method,
+	        headers: {
+	            'Content-Type': 'application/json;charset=utf-8'
+	        },
+	        body: JSON.stringify(json)
+	    });
+	    if (response.ok) { 
+	      if (func != null){
+	      	let jsonResp = await response.json();
+	      	func(jsonResp);
+	      }
+	      return;
+	      
+	    } else {
+	      console.log("Ошибка HTTP: " + response.status);
+	    }  
+	}   
+}
+
+function updateMessages(){
+	let user = {};
+	user.id = sessionStorage.getItem('userid');
+	requestToServer("POST", TSChat.chatURL + "/messages/users/unread", user, addHistoryMessages);
+}
 
 // инициализация скрипта при первой загрузке или перезагрузке страницы
 function init(){
@@ -195,11 +247,9 @@ function init(){
 	    } else {
 	        sessionStorage.setItem('userName', "Вы");
 	        regNewUser(sessionStorage.getItem('userName'));
-	        addServiceMessage("Your name is" + sessionStorage.getItem('userName'));
+	        addServiceMessage("Your name is " + sessionStorage.getItem('userName'));
 	    }
 	}		
-
-
 
 	// заполнение формы вывода после перезагрузки страницы
 	if (sessionStorage.getItem('messages') == null){
@@ -207,7 +257,6 @@ function init(){
 	} else{
 	    messageOutput.value = sessionStorage.getItem('messages');
 	}
-
 
 	//установка нужного положения при обновлении страницы
 	if(TSChat.allowDrag){
@@ -223,97 +272,7 @@ function init(){
 	            chatWindow.style.top = sessionStorage.getItem('dragTop');
 	        }
 	    }
-	}		
-}
+	}	
 
-// реализация отправки сообщения на сервер
-function sendToServer(method, url, json, func) {    
-    if (TSChat.connectType == "xhr"){
-    	xhrRequestToServer(method, url, json, func);
-    }else {
-    	fetchRequestToServer(method, url, json, func)
-    }
-
-}
-
-function xhrRequestToServer(method, url, json, func) {    
-    let xhr = new XMLHttpRequest();
-    xhr.open(method, url);
-    xhr.setRequestHeader('Content-Type', 'application/json;charset=utf-8');
-    if (json != null){
-    	xhr.send(JSON.stringify(json));
-    } else{
-    	xhr.send();
-    }
-    xhr.onload = function() {
-        if (func != null){
-	        let jsonResp = JSON.parse(xhr.response);
-	        console.log(jsonResp);
-	        func(jsonResp);
-        }
-    };
-    xhr.onerror = function() { 
-        console.log(`Ошибка соединения`);
-    };
-}
-
-async function fetchRequestToServer(method, url, json, func) {
-    
-	if (method == "GET"){
-		let response = await fetch(url);
-	    if (response.ok) { 
-	      let jsonResp = await response.json();
-	      func(jsonResp);
-	    } else {
-	      console.log("Ошибка HTTP: " + response.status);
-	    }   
-	} else {
-		let response = await fetch(url,{
-	        method: method,
-	        headers: {
-	            'Content-Type': 'application/json;charset=utf-8'
-	        },
-	        body: JSON.stringify(json)
-	    });
-	    if (response.ok) { 
-	      if (func != null){
-	      	let jsonResp = await response.json();
-	      	func(jsonResp);
-	      }
-	      return;
-	      
-	    } else {
-	      console.log("Ошибка HTTP: " + response.status);
-	    }  
-	}
-
-
-
-
-	 
-
-
-
-/*
-    let msg = {};
-	msg.text = str;
-	let url = `http://localhost:8080/chatJS`;
-	
-	let response = await fetch(url,{
-  		method: 'POST',
-  		headers: {
-    		'Content-Type': 'application/json;charset=utf-8'
-  		},
-  		body: JSON.stringify(msg)
-	});
-	if (response.ok) { 
-	  let json = await response.json();
-	  writeToMessageOutput("Bot",json.text);
-	} else {
-	  console.log("Ошибка HTTP: " + response.status);
-	}
-*/
-
-
-    
+	let timerId = setInterval(updateMessages, 1000);
 }

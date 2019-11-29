@@ -77,8 +77,3 @@ public class Message {
         this.time = time;
     }
 }
-
-
-
-//private final static String URL =
-// "jdbc:mysql://localhost:3306/banklist?useUnicode=true&useSSL=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";

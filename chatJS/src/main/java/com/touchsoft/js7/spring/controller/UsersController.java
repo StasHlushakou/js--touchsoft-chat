@@ -19,17 +19,21 @@ public class UsersController {
 
     @GetMapping
     public Iterable<User> getAllUsers() {
+
         return userRepository.findAll();
+
     }
 
     @PostMapping
     public User addNewUser (@RequestBody User data) {
+
         User findUser = userRepository.findOneByNameLike(data.getName());
         if (findUser == null){
             userRepository.save(data);
             findUser = userRepository.findOneByNameLike(data.getName());
         }
         return findUser;
+
     }
 
 
