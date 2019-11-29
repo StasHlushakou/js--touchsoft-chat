@@ -1,85 +1,79 @@
-let title = "Chat";
-let botName = "Bot";
-let chatURL = "http://localhost:8080/chatJS";
-let cssClass = "model.css";
-let position = "right";
-let allowMinimize = false;
-let allowDrag = false;
-let requireName = false;
-let showTime = false;
-let connectType = "xhr";
+let operstor = {};
+operstor.chatURL = "http://localhost:8080";
+operstor.users = null;
 
-writeToScriptToConnection();
+init();
 
-chatTitleInput.onchange = function() {
-    title = chatTitleInput.value;
-    writeToScriptToConnection();
+
+function writeToUsersBorard(user){
+    let option = document.createElement('option');
+    option.value = user.id;
+    option.append(user.name);
+    userSelect.append(option);
+}
+
+
+userSelect.onchange = function() {
+    alert();
 };
 
-botNameInput.onchange = function() {
-    botName = botNameInput.value;
-    writeToScriptToConnection();
-};
 
-chatURLInput.onchange = function() {
-    chatURL = chatURLInput.value;
-    writeToScriptToConnection();
-};
 
-CSSClassInput.onchange = function() {
-    cssClass = CSSClassInput.value;
-    writeToScriptToConnection();
-};
+/*
+let user = {};
+writeToUsersBorard(user);
+*/
 
-positionInput.onchange = function() {
-    position = positionInput.value;
-    writeToScriptToConnection();
-};
+function addToUsersBoard(users){
+    operstor.users = users;
+    users.forEach(writeToUsersBorard);
+}
 
-allowMinimizeInput.onchange = function() {
-    allowMinimize = allowMinimizeInput.checked;
-    writeToScriptToConnection();
-};
 
-allowDragInput.onchange = function() {
-    allowDrag = allowDragInput.checked;
-    writeToScriptToConnection();
-};
 
-requireNameInput.onchange = function() {
-    requireName = requireNameInput.checked;
-    writeToScriptToConnection();
-};
 
-showTimeInput.onchange = function() {
-    showTime = showTimeInput.checked;
-    writeToScriptToConnection();
-};
 
-useXHRInput.onchange = function() {
-    connectType = useXHRInput.value;
-    writeToScriptToConnection();
-};
+// инициализация скрипта при первой загрузке или перезагрузке страницы
+function init(){
+    requestToServer("GET", operstor.chatURL + "/users", null, addToUsersBoard);
 
-usefetchInput.onchange = function() {
-    connectType = usefetchInput.value;
-    writeToScriptToConnection();
-};
 
-function writeToScriptToConnection() {
-    scriptToConnection.value = `
-    <script type="text/javascript">
-		let title = "${title}";
-		let botName = "${botName}";
-		let chatURL = "${chatURL}";
-		//let cssClass = "${cssClass}";
-		let position = "${position}";
-		let allowMinimize = ${allowMinimize};
-		let allowDrag = ${allowDrag};
-		let requireName = ${requireName};
-		let showTime = ${showTime};
-		let connectType = "${connectType}";
-	</script>
-	<script src="chat.js"></script>
-    `;
+    //let timerId = setInterval(updateUsers, 1000);
+}
+
+
+
+
+// реализация отправки запроса на сервер
+function requestToServer(method, url, json, func) {    
+    xhrRequestToServer(method, url, json, func);
+}
+
+// функция создания xhr-запроса
+function xhrRequestToServer(method, url, json, func) {    
+    let xhr = new XMLHttpRequest();
+    xhr.open(method, url);
+    xhr.setRequestHeader('Content-Type', 'application/json;charset=utf-8');
+    if (json != null){
+        xhr.send(JSON.stringify(json));
+    } else{
+        xhr.send();
+    }
+    xhr.onload = function() {
+        if (func != null){
+            let jsonResp = JSON.parse(xhr.response);
+            console.log(jsonResp);
+            func(jsonResp);
+        }
+    };
+    xhr.onerror = function() { 
+        console.log(`Ошибка соединения`);
+    };
+}
+
+
+function updateMessages(){
+    let user = {};
+    user.id = sessionStorage.getItem('userid');
+    requestToServer("POST", TSChat.chatURL + "/messages/users/unread", user, addHistoryMessages);
 }
