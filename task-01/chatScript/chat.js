@@ -1,6 +1,7 @@
-let newDiv = document.createElement('div');
 
-newDiv.innerHTML = `<div id="chatWindow" class="touchSoftChat">
+let newDiv = document.createElement('div');
+newDiv.innerHTML = `
+<div id="chatWindow" class="touchSoftChat">
     <h2 id="heading"></h2>
     <input id="minimizeBtn" type="button" value="[]" onclick="minimizeButton()">
     <div id="chatMinimize" hidden = "true" >
@@ -9,9 +10,7 @@ newDiv.innerHTML = `<div id="chatWindow" class="touchSoftChat">
         <input id="btnSend" type="button" value="Send" onclick="sendButton()">
     </div>
 </div>`;
-
 document.body.append(newDiv);
-
 function loadCss(href) {
     var link = document.createElement("link");
     link.rel = "stylesheet";
@@ -19,19 +18,15 @@ function loadCss(href) {
     document.head.appendChild(link);
 }
 loadCss("chat.css");
-        
-
 // установка заголовка чата
-heading.textContent = title;
-
+heading.textContent = TSChat.title;
 // проверка привязки(right/left)
-if (position == "left"){
+if (TSChat.position == "left"){
     chatWindow.style.left="5px";
 }
-
 // проверка разрешения сворачивания чата и установка чату 
-// необходимого состояния после перезвгрузки страницы
-if (!allowMinimize){
+// необходимого состояния после перезагрузки страницы
+if (!TSChat.allowMinimize){
     chatMinimize.hidden = false;
     minimizeBtn.disabled = true; 
     minimizeBtn.value = "-"
@@ -44,9 +39,8 @@ if (!allowMinimize){
         } 
     }
 }
-
 // установка перетаскивания, если разрешено
-if(allowDrag){
+if(TSChat.allowDrag) {
     heading.onmousedown = function(event) {
         let shiftX = event.clientX - chatWindow.getBoundingClientRect().left;
         let shiftY = event.clientY - chatWindow.getBoundingClientRect().top;
@@ -75,9 +69,20 @@ if(allowDrag){
     };
 }
 
+
+
+
+
+
+
+
+
+
+
+
 // просьба ввести имя, если оно не установлено
 if (sessionStorage.getItem('userName') == null){
-    if (requireName){
+    if (TSChat.requireName){
         sessionStorage.setItem('userName', "");
         writeToMessageOutput("", "Please, enter your name.");
     } else {
@@ -85,13 +90,19 @@ if (sessionStorage.getItem('userName') == null){
     }
 }
 
+
+
+
+
+/*
 //выбор способа отправки сообщений на сервер
 let sendToServer = null;
-if (connectType == "xhr"){
+if (TSChat.connectType == "xhr"){
     sendToServer = useXHR;
 } else{
     sendToServer = useFetch;
 }
+*/
 
 
 // заполнение формы вывода после перезагрузки страницы
@@ -102,7 +113,7 @@ if (sessionStorage.getItem('messages') == null){
 }
 
 //установка нужного положения при обновлении страницы
-if(allowDrag){
+if(TSChat.allowDrag){
     if (sessionStorage.getItem('dragLeft') == null){
         sessionStorage.setItem('dragLeft', 'no');
         sessionStorage.setItem('dragTop', 'no');
@@ -139,13 +150,18 @@ function sendButton() {
     }
     if (msg != ""){
         message.value = "";
-        sendToServer(msg);
+        //sendToServer(msg);
+        let url = "http://localhost:8080/messages/";
+        let type = "GET";
+        let mesage = {};
+        function func(json){alert(toString(json))};
+        XHRRequestToServer(url, type, mesage, func);
         writeToMessageOutput(sessionStorage.getItem('userName'), msg);
     }
 }
 
 function writeToMessageOutput(from, message) {
-    if (showTime){
+    if (TSChat.showTime){
         let date = new Date();
         messageOutput.value += date.getHours() + ":" + date.getMinutes() + " " + from + " : " + message + "\r\n";
     } else{
@@ -155,35 +171,57 @@ function writeToMessageOutput(from, message) {
     sessionStorage.setItem('messages', messageOutput.value);
 }
 
-function useXHR(str) {
-    let msg = {};
+
+
+function sendToServer(url, type, message, func){
+    if (TSChat.connectType == "xhr"){
+        XHRRequestToServer(url, type, message, func);
+    } else{
+        FetchRequestToServer()
+    }
+}
+
+
+/*
+let msg = {};
     msg.text = str;
+*/
+
+
+
+function XHRRequestToServer(url, type, func, message) {
+    
     let xhr = new XMLHttpRequest();
-    xhr.open("POST", chatURL)
+    xhr.open("type", url)
     xhr.setRequestHeader('Content-Type', 'application/json;charset=utf-8');
-    xhr.send(JSON.stringify(msg));
+    xhr.send(JSON.stringify(message));
     xhr.onload = function() {
         let json = JSON.parse(xhr.response);
-        writeToMessageOutput(botName, json.text);
+        func(json);
+        //writeToMessageOutput(TSChat.botName, json.text);
     };
     xhr.onerror = function() { 
         console.log(`Ошибка соединения`);
     };
 }
 
-async function useFetch(str) {
-    let msg = {};
+/*
+let msg = {};
     msg.text = str;
-    let response = await fetch(chatURL,{
-        method: 'POST',
+*/
+async function FetchRequestToServer(url, type, func, message) {
+    
+    let response = await fetch(url,{
+        method: type,
         headers: {
             'Content-Type': 'application/json;charset=utf-8'
         },
-        body: JSON.stringify(msg)
+        body: JSON.stringify(message)
     });
     if (response.ok) { 
       let json = await response.json();
-      writeToMessageOutput(botName,json.text);
+      func(json);
+      //writeToMessageOutput(TSChat.botName,json.text);
     } else {
       console.log("Ошибка HTTP: " + response.status);
     }   

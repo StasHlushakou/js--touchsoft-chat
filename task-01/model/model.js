@@ -41,39 +41,43 @@ function writeToMessageOutput(from, message) {
  	который в комментарии.
  */
 
-/*async*/ function sendToServer(str) {
+async function sendToServer(str) {
 	
-	/*
+	
 	let msg = {};
-	msg.text = str;
-	let url = `http://localhost:8080/chatJS`;
+	msg.id = 0;
+	let url = `http://localhost:8080/messages`;
 	let response = await fetch(url,{
-  		method: 'POST',
+  		method: 'GET',
   		headers: {
     		'Content-Type': 'application/json;charset=utf-8'
   		},
-  		body: JSON.stringify(msg)
+  		//body: JSON.stringify(msg)
 	});
 	if (response.ok) { 
 	  let json = await response.json();
+	  console.log(json);
 	  writeToMessageOutput("Bot",json.text);
 	} else {
 	  console.log("Ошибка HTTP: " + response.status);
 	}
-	*/
 	
+	
+	/*
 	let msg = {};
-	msg.text = str;
+	msg.id = 0;
 	let xhr = new XMLHttpRequest();
-	xhr.open("POST", `http://localhost:8080/chatJS`)
+	xhr.open("POST", `http://localhost:8080/messages/users`)
 	xhr.setRequestHeader('Content-Type', 'application/json;charset=utf-8');
 	xhr.send(JSON.stringify(msg));
 	xhr.onload = function() {
 	  	let json = JSON.parse(xhr.response);
+	 	console.log(json)
 	 	writeToMessageOutput("Bot", json.text);
 	};
 	xhr.onerror = function() { 
 	  	console.log(`Ошибка соединения`);
 	};
+	*/
 	
 }

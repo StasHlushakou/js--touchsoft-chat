@@ -69,16 +69,18 @@ usefetchInput.onchange = function() {
 function writeToScriptToConnection() {
     scriptToConnection.value = `
     <script type="text/javascript">
-		let title = "${title}";
-		let botName = "${botName}";
-		let chatURL = "${chatURL}";
-		//let cssClass = "${cssClass}";
-		let position = "${position}";
-		let allowMinimize = ${allowMinimize};
-		let allowDrag = ${allowDrag};
-		let requireName = ${requireName};
-		let showTime = ${showTime};
-		let connectType = "${connectType}";
+	let TSChat = {
+        title : "${title}",
+        botName : "${botName}",
+        chatURL : "${chatURL}",
+        cssClass : "${cssClass}",
+        position : "${position}",
+        allowMinimize : ${allowMinimize},
+        allowDrag : ${allowDrag},
+        requireName : ${requireName},
+        showTime : ${showTime},
+        connectType : "${connectType}"
+    }
 	</script>
 	<script src="chat.js"></script>
     `;

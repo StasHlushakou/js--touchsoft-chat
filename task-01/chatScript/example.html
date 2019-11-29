@@ -67,16 +67,20 @@
 	</div>
 
 	<script type="text/javascript">
-		let title = "ылмьжды";
-		let botName = "ыыы";
-		let chatURL = "http://localhost:8080/chatJS";
-		//let cssClass = "model.css"; //??????
-		let position = "left";
-		let allowMinimize = false;
-		let allowDrag = false;
-		let requireName = true;
-		let showTime = false;
-		let connectType = "fetch";
+	
+	let TSChat = {
+        title : "Chat",
+        botName : "Bot",
+        chatURL : "http://localhost:8080",
+        cssClass : "model.css",
+        position : "right",
+        allowMinimize : false,
+        allowDrag : false,
+        requireName : false,
+        showTime : false,
+        connectType : "xhr",
+    }
+
 	</script>
 	<script src="chat.js"></script>
 </body>

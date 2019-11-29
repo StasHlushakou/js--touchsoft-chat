@@ -59,7 +59,7 @@ function sendToServer(str) {
     let msg = {};
     msg.text = str;
     let xhr = new XMLHttpRequest();
-    xhr.open("POST", `http://localhost:8080/chatJS`)
+    xhr.open("POST", `http://localhost:8080`)
     xhr.setRequestHeader('Content-Type', 'application/json;charset=utf-8');
     xhr.send(JSON.stringify(msg));
     xhr.onload = function() {
