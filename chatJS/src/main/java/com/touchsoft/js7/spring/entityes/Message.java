@@ -13,6 +13,8 @@ public class Message {
     private String text;
     private Long userid;
     private boolean isRead;
+    private String username;
+    private String time;
 
 
     public Message() {}
@@ -50,14 +52,30 @@ public class Message {
         this.isRead = isRead;
     }
 
-    public Message(Long id, String text, Long userid, boolean isRead) {
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public Message(Long id, String text, Long userid, boolean isRead, String username, String time) {
         this.id = id;
         this.text = text;
         this.userid = userid;
         this.isRead = isRead;
+        this.username = username;
+        this.time = time;
     }
-
-
 }
 
 

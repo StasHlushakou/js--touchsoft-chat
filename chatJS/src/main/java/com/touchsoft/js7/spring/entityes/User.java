@@ -13,6 +13,7 @@ public class User {
 
     @Column(unique=true)
     private String name;
+    private String botname;
 
     public User() {}
 
@@ -33,8 +34,17 @@ public class User {
         this.name = name;
     }
 
-    public User(Long id, String name) {
+    public String getBotname() {
+        return botname;
+    }
+
+    public void setBotname(String botname) {
+        this.botname = botname;
+    }
+
+    public User(Long id, String name, String botname) {
         this.id = id;
         this.name = name;
+        this.botname = botname;
     }
 }

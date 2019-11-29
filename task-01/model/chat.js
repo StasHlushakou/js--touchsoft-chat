@@ -18,7 +18,7 @@ function loadCss(href) {
     link.href = href;
     document.head.appendChild(link);
 }
-loadCss("https://rawcdn.githack.com/StasHlushakou/js--touchsoft-chat/0cc5b7e0a4f6f75d50b17c5b80d0b04392a1e107/task-01/model/model.css");
+loadCss("chat.css");
         
 if (sessionStorage.getItem('isMinimize') == null){
     sessionStorage.setItem('isMinimize', true);
