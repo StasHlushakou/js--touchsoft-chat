@@ -4,7 +4,7 @@ init();
 function minimizeButton() {
     chatMinimize.hidden =  !chatMinimize.hidden;
     minimizeBtn.value = minimizeBtn.value == "-" ? "[]" : "-";
-    sessionStorage.setItem('isMinimize', chatMinimize.hidden);
+    sessionStorage.setItem('isHidden', chatMinimize.hidden);
 }
 
 // обработка нажатия кнопки отправки сообщения
@@ -25,11 +25,10 @@ function sendButton() {
     if (message.value != ""){
         let msg = {};
 	    msg.userid = sessionStorage.getItem('userid');
-	    msg.username = sessionStorage.getItem('username')
+	    msg.username = sessionStorage.getItem('userName')
 	    let date = new Date();
 	    msg.time = date.getHours() + ":" + date.getMinutes();
 	    msg.text = message.value;
-	    msg.username = sessionStorage.getItem('userName');
 		msg.read = true;
         sendMessageToServer(msg);
         writeToMessageOutput(msg);
@@ -41,6 +40,7 @@ function sendButton() {
 function addServiceMessage(str){
 
 	messageOutput.value += str + "\r\n";
+	sessionStorage.setItem('messages', messageOutput.value);
 }
 
 function setReadMessageStatus(message){
@@ -166,10 +166,10 @@ function updateMessages(){
 // инициализация скрипта при первой загрузке или перезагрузке страницы
 function init(){
 	let newDiv = document.createElement('div');
-	newDiv.innerHTML = `<div id="chatWindow" class="touchSoftChat">
+	newDiv.innerHTML = `<div id="chatWindow" class="${TSChat.cssClass}">
 	    <h2 id="heading">chat</h2>
 	    <input id="minimizeBtn" type="button" value="[]" onclick="minimizeButton()">
-	    <div id="chatMinimize" display="none" hidden = "false" >
+	    <div id="chatMinimize" hidden="true">
 	        <textarea id="messageOutput" disabled="disabled" ></textarea>
 	        <textarea id="message" rows="3" cols="40"></textarea>
 	        <input id="btnSend" type="button" value="Send" onclick="sendButton()">
@@ -185,8 +185,11 @@ function init(){
 	    document.head.appendChild(link);
 	}
 	loadCss("chat.css");
+
+
 	// установка заголовка чата
 	heading.textContent = TSChat.title;
+	
 	// проверка привязки(right/left)
 	if (TSChat.position == "left"){
 	    chatWindow.style.left="5px";
@@ -217,6 +220,7 @@ function init(){
 	        chatWindow.style.position = 'fixed';
 	        chatWindow.style.bottom = "auto";
 	        chatWindow.style.right = "auto";
+
 	        moveAt(event.pageX, event.pageY);
 	        function moveAt(pageX, pageY) {
 	            chatWindow.style.left = pageX - shiftX + 'px';
