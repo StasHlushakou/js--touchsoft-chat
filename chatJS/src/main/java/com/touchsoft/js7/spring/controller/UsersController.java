@@ -24,6 +24,25 @@ public class UsersController {
 
     }
 
+    @GetMapping("/online")
+    public Iterable<User> getOnlineUsers() {
+
+        return userRepository.findByisOnline(true);
+
+    }
+
+    @PostMapping("/online")
+    public void setOnlineStatusFromUser(@RequestBody User data) {
+
+        userRepository.save(data);
+
+        //return userRepository.findByisOnline(true);
+
+    }
+
+
+
+
     @PostMapping
     public User addNewUser (@RequestBody User data) {
 

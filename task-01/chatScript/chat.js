@@ -36,6 +36,16 @@ function sendButton() {
     }
 }
 
+function setOnlineStatus(user){
+	requestToServer("POST", TSChat.chatURL + "/users/online", user, null);
+}
+
+
+window.onunload = function() {
+  TSChat.user.online = false;
+  requestToServer("POST", TSChat.chatURL + "/users/online", TSChat.user, null, true);
+};
+
 // запись в поле вывода служебной информации
 function addServiceMessage(str){
 
@@ -75,8 +85,11 @@ function dounloadHistoryMessages(user){
 
 // Устанавливает id пользователя, полученного с сервера и запускает загрузку его сообщений
 function setUser(user){
+	TSChat.user = user;
 	sessionStorage.setItem('userid', user.id);
 	dounloadHistoryMessages(user);
+	TSChat.user.online = true;
+	setOnlineStatus(TSChat.user);
 }
 
 // Регистрирует нового пользователя или получает данные старого по его имени с сервера
@@ -126,7 +139,7 @@ function xhrRequestToServer(method, url, json, func) {
 }
 
 // функция создания fetch-запроса
-async function fetchRequestToServer(method, url, json, func) {
+async function fetchRequestToServer(method, url, json, func, keepalive) {
     
 	if (method == "GET"){
 		let response = await fetch(url);
@@ -142,7 +155,8 @@ async function fetchRequestToServer(method, url, json, func) {
 	        headers: {
 	            'Content-Type': 'application/json;charset=utf-8'
 	        },
-	        body: JSON.stringify(json)
+	        body: JSON.stringify(json),
+	        keepalive : keepalive
 	    });
 	    if (response.ok) { 
 	      if (func != null){

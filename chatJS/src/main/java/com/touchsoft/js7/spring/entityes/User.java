@@ -14,6 +14,7 @@ public class User {
     @Column(unique=true)
     private String name;
     private String botname;
+    private boolean isOnline;
 
     public User() {}
 
@@ -42,9 +43,18 @@ public class User {
         this.botname = botname;
     }
 
-    public User(Long id, String name, String botname) {
+    public boolean isOnline() {
+        return isOnline;
+    }
+
+    public void setOnline(boolean online) {
+        isOnline = online;
+    }
+
+    public User(Long id, String name, String botname, boolean isOnline) {
         this.id = id;
         this.name = name;
         this.botname = botname;
+        this.isOnline = isOnline;
     }
 }

@@ -1,7 +1,7 @@
 let operator = {};
 operator.chatURL = "http://localhost:8080";
 operator.users = [];
-operator.userMessages = [];
+//operator.userMessages = [];
 operator.selectUser = {};
 //operator.messagesArr = [];
 operator.isUpdateMessages = false;
@@ -10,15 +10,31 @@ init();
 
 
 function writeToUsersBorard(user){
+    
     for (let us of operator.users){
         if (user.id == us.id){
+            us = user;
+            let option = document.getElementById('option' + us.id);
+            if (us.online){
+                option.style.backgroundColor = "green";
+                //operator.users[user.id].online = true;
+            } else{
+                option.style.backgroundColor = "white";
+                //operator.users[user.id].online = false;
+            }
             return;
         }
     }
     operator.users.push(user)
     let option = document.createElement('option');
     option.value = user.id;
-    option.append(user.name);
+    option.setAttribute('id', 'option' + user.id);
+    option.append(user.id + " " +user.name);
+    if (user.online){
+        option.style.backgroundColor = "green";
+    }else{
+        option.style.backgroundColor = "white";
+    }
     userSelect.append(option);
 }
 
@@ -33,15 +49,67 @@ function updateUsers() {
 
 
 
+
+
+
+
 filter.onchange = function() {
-    
     console.log(operator.selectUser.id);
 };
 
+
+function compareById(a, b) {
+  if (a.id > b.id) return 1;
+  if (a.id == b.id) return 0;
+  if (a.id < b.id) return -1;
+}
+
+function compareByName(a, b) {
+  if (a.name > b.name) return 1;
+  if (a.name == b.name) return 0;
+  if (a.name < b.name) return -1;
+}
+
+function compareByOnline(a, b) {
+  if (a.online < b.online) return 1;
+  if (a.online == b.online) return 0;
+  if (a.online > b.online) return -1;
+}
+
+
+
+
+
+
 sort.onchange = function() {
-    
-    console.log(operator.selectUser.id);
+    if (sort.value == "id"){
+        let arr = operator.users.sort(compareById);
+        operator.users = [];
+        userSelect.innerHTML = "";
+        addToUsersBoard(arr);
+    } else if (sort.value == "name"){
+        let arr = operator.users.sort(compareByName);
+        operator.users = [];
+        userSelect.innerHTML = "";
+        addToUsersBoard(arr);
+    }else{
+        let arr = operator.users.sort(compareByOnline);
+        operator.users = [];
+        userSelect.innerHTML = "";
+        addToUsersBoard(arr);
+    }
 };
+
+
+
+
+
+
+
+
+
+
+
 
 userSelect.onchange = function() {
     
@@ -124,14 +192,6 @@ function sendButton() {
 
 // запись в поле вывода сообщения
 function writeToMessageOutput(message) {
-    /*
-    for (let msg of operator.messagesArr){
-        if (msg.id == message.id){
-            return;
-        }
-    }
-    */
-    //operator.messagesArr.push(message);
     let isRead = message.read ? "Прочитано   " : "Не прочитано";
     messageOutput.value += isRead + " " + message.time + " " + message.username + ":" + message.text + "\r\n";
 }
@@ -160,6 +220,7 @@ function updateMessages(){
 // инициализация скрипта при первой загрузке или перезагрузке страницы
 function init(){
     updateUsers();
-    let timerUpdateUsers = setInterval(updateUsers, 10000);
+    let timerUpdateUsers = setInterval(updateUsers, 5000);
     let timerUpdateMessages = setInterval(updateMessages, 1000);
 }
+

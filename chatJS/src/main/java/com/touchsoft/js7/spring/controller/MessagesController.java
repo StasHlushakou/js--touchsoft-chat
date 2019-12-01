@@ -57,4 +57,14 @@ public class MessagesController {
     }
 
 
+    @PostMapping("/users/{idGreatThen}")
+    public List<Message> getMessagesWithIdGreaterThanByUserID(@PathVariable final Long idGreatThen, @RequestBody User user) {
+
+
+        return messageRepository.findByUseridAndIdGreaterThan(user.getId(),idGreatThen);
+
+    }
+
+
+
 }
