@@ -116,10 +116,10 @@ function requestToServer(method, url, json, func) {
 }
 
 // функция создания xhr-запроса
-function xhrRequestToServer(method, url, json, func) {    
+function xhrRequestToServer(method, url, json, func, keepalive) {    
     
     let xhr = new XMLHttpRequest();
-    xhr.open(method, url);
+    xhr.open(method, url, !keepalive);
     xhr.setRequestHeader('Content-Type', 'application/json;charset=utf-8');
     if (json != null){
     	xhr.send(JSON.stringify(json));
@@ -129,7 +129,6 @@ function xhrRequestToServer(method, url, json, func) {
     xhr.onload = function() {
         if (func != null){
 	        let jsonResp = JSON.parse(xhr.response);
-	        console.log(jsonResp);
 	        func(jsonResp);
         }
     };
@@ -146,6 +145,7 @@ async function fetchRequestToServer(method, url, json, func, keepalive) {
 	    if (response.ok) { 
 	      let jsonResp = await response.json();
 	      func(jsonResp);
+	      
 	    } else {
 	      console.log("Ошибка HTTP: " + response.status);
 	    }   
@@ -176,6 +176,31 @@ function updateMessages(){
 	user.id = sessionStorage.getItem('userid');
 	requestToServer("POST", TSChat.chatURL + "/messages/users/unread", user, addHistoryMessages);
 }
+
+/*
+function updateCommands(){
+	let user = {};
+	user.id = sessionStorage.getItem('userid');
+	requestToServer("POST", TSChat.chatURL + "/commands/users/notdone", user, executeCommands);
+}
+
+function executeCommands(commandsArr){
+	commandsArr.forEach(executeCommand);
+}
+
+function executeCommand(command){
+	if (command.command == "getUserInfo"){
+		requestToServer("GET", "https://geolocation-db.com/json", null , setComandStatus, false, command);
+	}
+}
+
+function setComandStatus(userResponse, command){
+	command.userResponse = userResponse;
+	requestToServer("POST", TSChat.chatURL + "/commands", command , null);
+}
+*/
+
+
 
 // инициализация скрипта при первой загрузке или перезагрузке страницы
 function init(){
@@ -292,5 +317,6 @@ function init(){
 	    }
 	}	
 
-	let timerId = setInterval(updateMessages, 1000);
+	let msgUpdate = setInterval(updateMessages, 1000);
+	//let commandUpdate = setInterval(updateCommands, 1000);
 }

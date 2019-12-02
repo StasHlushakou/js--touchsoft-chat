@@ -1,9 +1,7 @@
 let operator = {};
 operator.chatURL = "http://localhost:8080";
 operator.users = [];
-//operator.userMessages = [];
 operator.selectUser = {};
-//operator.messagesArr = [];
 operator.isUpdateMessages = false;
 init();
 
@@ -13,14 +11,12 @@ function writeToUsersBorard(user){
     
     for (let us of operator.users){
         if (user.id == us.id){
-            us = user;
+            us.online = user.online;
             let option = document.getElementById('option' + us.id);
             if (us.online){
-                option.style.backgroundColor = "green";
-                //operator.users[user.id].online = true;
+                option.style.backgroundColor = "green"; 
             } else{
                 option.style.backgroundColor = "white";
-                //operator.users[user.id].online = false;
             }
             return;
         }

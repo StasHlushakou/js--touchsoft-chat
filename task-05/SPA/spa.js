@@ -1,85 +1,31 @@
-let title = "Chat";
-let botName = "Bot";
-let chatURL = "http://localhost:8080";
-let cssClass = "touch-soft-chat";
-let position = "right";
-let allowMinimize = false;
-let allowDrag = false;
-let requireName = false;
-let showTime = false;
-let connectType = "xhr";
+var counter = document.querySelector('#counter');
+var content = document.querySelector('#content');
+setInterval(() => counter.innerText = new Date(), 1000);
 
-writeToScriptToConnection();
+// Создать обработчик URL
+function handleUrl(url) {
+    document.querySelectorAll('a.active').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('a[href="' + url.split('#').pop() + '"]').forEach(el => el.classList.add('active'));
 
-chatTitleInput.onchange = function() {
-    title = chatTitleInput.value;
-    writeToScriptToConnection();
-};
-
-botNameInput.onchange = function() {
-    botName = botNameInput.value;
-    writeToScriptToConnection();
-};
-
-chatURLInput.onchange = function() {
-    chatURL = chatURLInput.value;
-    writeToScriptToConnection();
-};
-
-CSSClassInput.onchange = function() {
-    cssClass = CSSClassInput.value;
-    writeToScriptToConnection();
-};
-
-positionInput.onchange = function() {
-    position = positionInput.value;
-    writeToScriptToConnection();
-};
-
-allowMinimizeInput.onchange = function() {
-    allowMinimize = allowMinimizeInput.checked;
-    writeToScriptToConnection();
-};
-
-allowDragInput.onchange = function() {
-    allowDrag = allowDragInput.checked;
-    writeToScriptToConnection();
-};
-
-requireNameInput.onchange = function() {
-    requireName = requireNameInput.checked;
-    writeToScriptToConnection();
-};
-
-showTimeInput.onchange = function() {
-    showTime = showTimeInput.checked;
-    writeToScriptToConnection();
-};
-
-useXHRInput.onchange = function() {
-    connectType = useXHRInput.value;
-    writeToScriptToConnection();
-};
-
-usefetchInput.onchange = function() {
-    connectType = usefetchInput.value;
-    writeToScriptToConnection();
-};
-
-function writeToScriptToConnection() {
-scriptToConnection.value = `<script type="text/javascript">
-let TSChat = {
-    title : "${title}",
-    botName : "${botName}",
-    chatURL : "${chatURL}",
-    cssClass : "${cssClass}",
-    position : "${position}",
-    allowMinimize : ${allowMinimize},
-    allowDrag : ${allowDrag},
-    requireName : ${requireName},
-    showTime : ${showTime},
-    connectType : "${connectType}"
+    content.innerHTML = url;
 }
-</script>
-<script src="chat.js"></script>`;
-}
+
+// Подписаться на изменения URL
+window.addEventListener('hashchange', (ev) => handleUrl(ev.newURL));
+
+// При загрузке страницы - считать состояние и запустить обработчик
+handleUrl(window.location.href);
+
+// Переопределить поведение внутренних ссылок
+document.body.addEventListener('click', (ev) => {
+    if(!ev.target.matches('a')) {
+        return;
+    }
+    ev.preventDefault();
+
+    // При клике по ссылке - обновлять URL
+    let url = ev.target.getAttribute('href');
+    window.location.hash = url;
+});
+
+
