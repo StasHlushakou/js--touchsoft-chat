@@ -1,20 +1,5 @@
 init();
 
-
- 
-
-function Message (text, readUser, readAdmin){
-	let date = new Date();
-    this.text = text;
-    this.userID = chatLS.userid;
-    this.readUser = readUser;
-	this.readAdmin = readAdmin;
-    this.senderName = chatLS.userName;
-    this.time = (date.getHours().toString().length > 1 ? date.getHours() : "0" + date.getHours()) + ":" + 
-    (date.getMinutes().toString().length > 1 ? date.getMinutes() : "0" +date.getMinutes()); 
-}
-
-
 /**
  * Handles clicking a minimize button.
  */
@@ -22,7 +7,7 @@ function minimizeButton() {
     chatMinimize.hidden =  !chatMinimize.hidden;
     minimizeBtn.value = minimizeBtn.value == "-" ? "[]" : "-";
     chatLS.isHidden = chatMinimize.hidden;
-    sessionStorage.chatLS = JSON.stringify(chatLS);
+    saveInfoToSessionStorage();
 }
 
 /**
@@ -33,7 +18,7 @@ function sendButton() {
     if (!chatLS.userName){
         if (message.value != ""){
             chatLS.userName = message.value;
-            sessionStorage.chatLS = JSON.stringify(chatLS);
+            saveInfoToSessionStorage();
             message.value = "";
             regNewUser(chatLS.userName);
             addServiceMessage("Your name is " + chatLS.userName);
@@ -55,10 +40,13 @@ function sendButton() {
  * Handles the push of a message send button
  */
 window.onunload = function() {
-  setOnlineUserStatus(TSChat.user, false, true)
+  setOnlineUserStatus(chatLS.user, false, true)
 };
 
+function saveInfoToSessionStorage(){
 
+	sessionStorage.chatLS = JSON.stringify(chatLS);
+}
 
 
 /**
@@ -81,7 +69,7 @@ function setOnlineUserStatus(user, status, keepalive){
 function addServiceMessage(str){
 	messageOutput.value += str + "\n";
 	chatLS.messages = messageOutput.value;
-	sessionStorage.chatLS = JSON.stringify(chatLS);
+	saveInfoToSessionStorage();
 }
 
 function setReadMessageStatus(message){
@@ -97,7 +85,7 @@ function writeToMessageOutput(message) {
         messageOutput.value += message.senderName + ":" + message.text + "\n";
     }
     chatLS.messages = messageOutput.value;
-    sessionStorage.chatLS = JSON.stringify(chatLS);
+    saveInfoToSessionStorage();
     if (!message.readUser){
     	setReadMessageStatus(message);       	
     }
@@ -117,12 +105,11 @@ function dounloadHistoryMessages(user){
 
 // Устанавливает id пользователя, полученного с сервера и запускает загрузку его сообщений
 function setUser(user){
-	TSChat.user = user;
-	chatLS.userid = user.id;
-	sessionStorage.chatLS = JSON.stringify(chatLS);
+	chatLS.user = user;
+	saveInfoToSessionStorage();
 	dounloadHistoryMessages(user);
-	TSChat.user.online = true;
-	setOnlineUserStatus(TSChat.user);
+	chatLS.user.online = true;
+	setOnlineUserStatus(chatLS.user, true, false);
 }
 
 // Регистрирует нового пользователя или получает данные старого по его имени с сервера
@@ -150,7 +137,6 @@ function requestToServer(method, url, json, func, keepalive) {
 
 // функция создания xhr-запроса
 function xhrRequestToServer(method, url, json, func, keepalive) {    
-    
     let xhr = new XMLHttpRequest();
     xhr.open(method, url, !keepalive);
     xhr.setRequestHeader('Content-Type', 'application/json;charset=utf-8');
@@ -172,7 +158,6 @@ function xhrRequestToServer(method, url, json, func, keepalive) {
 
 // функция создания fetch-запроса
 async function fetchRequestToServer(method, url, json, func, keepalive) {
-    
 	if (method == "GET"){
 		let response = await fetch(url);
 	    if (response.ok) { 
@@ -206,36 +191,52 @@ async function fetchRequestToServer(method, url, json, func, keepalive) {
 
 function updateMessages(){
 	if (chatLS.userName){
-		requestToServer("GET", TSChat.chatURL + "/messages/users/userunread/" + chatLS.userid, null, addHistoryMessages);
+		requestToServer("GET", TSChat.chatURL + "/messages/users/userunread/" + chatLS.user.id , null, addHistoryMessages);
 	}
 }
 
 
-
-/*
 function updateCommands(){
-	let user = {};
-	user.id = sessionStorage.getItem('userid');
-	requestToServer("POST", TSChat.chatURL + "/commands/users/notdone", user, executeCommands);
+	if (chatLS.userName){
+		requestToServer("GET", TSChat.chatURL + "/commands/users/notcompleted/" + chatLS.user.id , null, executeCommands);
+	}
 }
 
 function executeCommands(commandsArr){
+	
 	commandsArr.forEach(executeCommand);
 }
 
 function executeCommand(command){
-	if (command.command == "getUserInfo"){
-		requestToServer("GET", "https://geolocation-db.com/json", null , setComandStatus, false, command);
+	if (command.commandText == "getUserInfo"){
+		alert("запрос ip");
+		requestToServer("GET", "https://geolocation-db.com/json", null , setComandStatus);
+	} else {
+		//alert("запрос modalnogo okna");
 	}
 }
 
-function setComandStatus(userResponse, command){
-	command.userResponse = userResponse;
-	requestToServer("POST", TSChat.chatURL + "/commands", command , null);
+//requestToServer(method, url, json, func, keepalive)
+
+
+function setComandStatus(userResponse){
+	console.log(userResponse);
+	//command.userResponse = userResponse;
+	//requestToServer("POST", TSChat.chatURL + "/commands", command , null);
 }
-*/
 
 
+
+function Message (text, readUser, readAdmin){
+	let date = new Date();
+    this.text = text;
+    this.userID = chatLS.user.id;
+    this.readUser = readUser;
+	this.readAdmin = readAdmin;
+    this.senderName = chatLS.userName;
+    this.time = (date.getHours().toString().length > 1 ? date.getHours() : "0" + date.getHours()) + ":" + 
+    (date.getMinutes().toString().length > 1 ? date.getMinutes() : "0" +date.getMinutes()); 
+}
 
 // инициализация скрипта при первой загрузке или перезагрузке страницы
 function init(){
@@ -269,6 +270,7 @@ function init(){
 	if (!sessionStorage.getItem('chatLS')){
 		chatLS = {};
 		chatLS.isHidden = true;
+		chatLS.messages = "";
 		//проверка требования ввода имени
 		if (TSChat.requireName){
 	        chatLS.userName = "";
@@ -278,17 +280,14 @@ function init(){
 	        regNewUser(chatLS.userName);
 	        addServiceMessage("Your name is " + chatLS.userName);
 	    }
-	    chatLS.messages = "";
 	    if(TSChat.allowDrag){
 	    	chatLS.dragLeft = 'no';
 	        chatLS.dragTop = 'no';
 	    }
-
-		sessionStorage.chatLS = JSON.stringify(chatLS);
+		saveInfoToSessionStorage();
     } else{
         chatLS = sessionStorage.chatLS ? JSON.parse(sessionStorage.chatLS) : [];
         messageOutput.value = chatLS.messages;
-		
 		if(TSChat.allowDrag){
 			if (chatLS.dragLeft != 'no'){
 	            chatWindow.style.position = 'fixed';
@@ -298,10 +297,7 @@ function init(){
 	            chatWindow.style.top = chatLS.dragTop;
 	        }
 		}
-
-
     }
-
 
 	// проверка разрешения сворачивания чата и установка чату 
 	// необходимого состояния после перезагрузки страницы
@@ -336,15 +332,15 @@ function init(){
 	            chatWindow.onmouseup = null;
 	            chatLS.dragLeft = chatWindow.style.left; 
 	            chatLS.dragTop = chatWindow.style.top;
-	            sessionStorage.chatLS = JSON.stringify(chatLS);
-
+	            saveInfoToSessionStorage();
 	        };
 	    };
 	    heading.ondragstart = function() {
 	      return false;
 	    };
 	}
-
 	let msgUpdate = setInterval(updateMessages, 1000);
-	//let commandUpdate = setInterval(updateCommands, 1000);
+	let commandUpdate = setInterval(updateCommands, 1000);
 }
+
+
