@@ -137,7 +137,7 @@ https://rawgit.com/vvscode/js--base-course/master/04/cls/index.html#/8
 
 Добавить в конфигуратор опцию, которая будет задавать, какой механизм использовать для получения новых сообщений.
 
-![New Option](new_option.png)
+![New Option](image/new_option.png)
 
 `refetch` - использовать периодические запросы на сервер с выбранной выше технологией (fetch/XHR)
 
