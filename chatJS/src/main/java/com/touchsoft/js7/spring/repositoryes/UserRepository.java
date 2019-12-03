@@ -11,7 +11,7 @@ public interface UserRepository extends CrudRepository<User, Long> {
 
     User findOneByNameLike(String name);
 
-    List<User> findByisOnline(boolean isOnline);
+    List<User> findByIsOnline(boolean isOnline);
 
 
 }

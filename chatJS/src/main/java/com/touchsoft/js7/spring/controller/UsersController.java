@@ -24,36 +24,40 @@ public class UsersController {
 
     }
 
-    @GetMapping("/online")
-    public Iterable<User> getOnlineUsers() {
-
-        return userRepository.findByisOnline(true);
-
-    }
-
-    @PostMapping("/online")
-    public void setOnlineStatusFromUser(@RequestBody User data) {
+    @PostMapping
+    public void addNewUser (@RequestBody User data) {
 
         userRepository.save(data);
 
-        //return userRepository.findByisOnline(true);
-
     }
 
-
-
-
-    @PostMapping
-    public User addNewUser (@RequestBody User data) {
+    @PostMapping("/reg")
+    public User returnOrCreateUser (@RequestBody User data) {
 
         User findUser = userRepository.findOneByNameLike(data.getName());
         if (findUser == null){
             userRepository.save(data);
             findUser = userRepository.findOneByNameLike(data.getName());
         }
+
         return findUser;
 
     }
+
+
+
+    @GetMapping("/online")
+    public Iterable<User> getOnlineUsers() {
+
+        return userRepository.findByIsOnline(true);
+
+    }
+
+
+
+
+
+
 
 
 

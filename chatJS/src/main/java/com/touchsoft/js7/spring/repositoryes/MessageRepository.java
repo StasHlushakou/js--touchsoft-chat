@@ -9,13 +9,16 @@ import java.util.List;
 public interface MessageRepository extends CrudRepository<Message, Long> {
 
     // сообщения определённого пользователя
-    List<Message> findByUserid(Long userid);
+    List<Message> findByUserID(Long userID);
 
-    // непрочитанные сообщения определённого пользователя
-    List<Message> findByUseridAndIsRead(Long userid, boolean isRead);
+    // непрочитанные сообщения определённого пользователя пользователем
+    List<Message> findByUserIDAndIsReadUser(Long userID, boolean isReadUser);
+
+    // непрочитанные сообщения определённого пользователя админом
+    List<Message> findByUserIDAndIsReadAdmin(Long userID, boolean isReadAdmin);
 
     // сообщения с id > заданного у определённого пользователя
-    List<Message> findByUseridAndIdGreaterThan(Long userid, Long id);
+    List<Message> findByUserIDAndIdGreaterThan(Long userID, Long id);
 
 
 

@@ -35,33 +35,40 @@ public class MessagesController {
     }
 
 
-    @PostMapping("/users")
-    public List<Message> getAllMessagesByUserID(@RequestBody User user) {
+    @GetMapping("/users/{userID}")
+    public List<Message> getAllMessagesByUserID(@PathVariable final Long userID) {
 
-        return  messageRepository.findByUserid(user.getId());
-
-    }
-
-    @PostMapping("/users/unread")
-    public List<Message> getUnreadMessagesByUserID(@RequestBody User user) {
-
-        return  messageRepository.findByUseridAndIsRead(user.getId(),false);
+        return  messageRepository.findByUserID(userID);
 
     }
 
-    @PostMapping("/users/unread/num")
-    public Long getNumOfUnreadMessagesByUserID(@RequestBody User user) {
+    @GetMapping("/users/userunread/{userID}")
+    public List<Message> getUserUnreadMessagesByUserID(@PathVariable final Long userID) {
 
-        return (long)messageRepository.findByUseridAndIsRead(user.getId(),false).size();
+        return  messageRepository.findByUserIDAndIsReadUser(userID,false);
+
+    }
+
+    @GetMapping("/users/adminunread/{userID}")
+    public List<Message> getAdminUnreadMessagesByUserID(@PathVariable final Long userID) {
+
+        return  messageRepository.findByUserIDAndIsReadAdmin(userID,false);
 
     }
 
 
-    @PostMapping("/users/{idGreatThen}")
-    public List<Message> getMessagesWithIdGreaterThanByUserID(@PathVariable final Long idGreatThen, @RequestBody User user) {
+    @GetMapping("/users/userunread/num/{userID}")
+    public Long getNumOfUnreadMessagesByUserID(@PathVariable final Long userID) {
+
+        return (long)messageRepository.findByUserIDAndIsReadUser(userID,false).size();
+
+    }
 
 
-        return messageRepository.findByUseridAndIdGreaterThan(user.getId(),idGreatThen);
+    @GetMapping("/users/{userID}/{idGreatThen}")
+    public List<Message> getMessagesWithIdGreaterThanByUserID(@PathVariable final Long userID, @PathVariable final Long idGreatThen) {
+
+        return messageRepository.findByUserIDAndIdGreaterThan(userID,idGreatThen);
 
     }
 

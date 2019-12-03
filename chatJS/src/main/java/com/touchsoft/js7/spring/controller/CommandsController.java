@@ -1,10 +1,7 @@
 package com.touchsoft.js7.spring.controller;
 
 import com.touchsoft.js7.spring.entityes.Command;
-import com.touchsoft.js7.spring.entityes.Message;
-import com.touchsoft.js7.spring.entityes.User;
 import com.touchsoft.js7.spring.repositoryes.CommandRepository;
-import com.touchsoft.js7.spring.repositoryes.MessageRepository;
 import com.touchsoft.js7.spring.repositoryes.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -36,23 +33,19 @@ public class CommandsController {
     }
 
 
-    @PostMapping("/users")
-    public List<Command> getAllCommandsByUserID(@RequestBody User user) {
+    @GetMapping("/users/{userID}")
+    public List<Command> getAllCommandsByUserID(@PathVariable final Long userID) {
 
-        return  commandsRepository.findByUserid(user.getId());
-
-    }
-
-    @PostMapping("/users/notdone")
-    public List<Command> getUnreadMessagesByUserID(@RequestBody User user) {
-
-        return  commandsRepository.findByUseridAndIsDone(user.getId(),false);
+        return  commandsRepository.findByUserID(userID);
 
     }
 
+    @GetMapping("/users/notcompleted/{userID}")
+    public List<Command> getUnreadMessagesByUserID(@PathVariable final Long userID) {
 
+        return  commandsRepository.findByUserIDAndIsCompleted(userID,false);
 
-
+    }
 
 
 }

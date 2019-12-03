@@ -9,10 +9,10 @@ import java.util.List;
 public interface CommandRepository extends CrudRepository<Command, Long> {
 
     // команды определённого пользователя
-    List<Command> findByUserid(Long userid);
+    List<Command> findByUserID(Long userID);
 
     // невыполненные команды определённого пользователя
-    List<Command> findByUseridAndIsDone(Long userid, boolean isDone);
+    List<Command> findByUserIDAndIsCompleted(Long userID, boolean isCompleted);
 
 
 }

@@ -10,9 +10,9 @@ public class Command {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
-    private Long userid;
-    private String command;
-    private boolean isDone;
+    private Long userID;
+    private String commandText;
+    private boolean isCompleted;
     private String userResponse;
 
     public Command() {}
@@ -25,28 +25,28 @@ public class Command {
         this.id = id;
     }
 
-    public Long getUserid() {
-        return userid;
+    public Long getUserID() {
+        return userID;
     }
 
-    public void setUserid(Long userid) {
-        this.userid = userid;
+    public void setUserID(Long userID) {
+        this.userID = userID;
     }
 
-    public String getCommand() {
-        return command;
+    public String getCommandText() {
+        return commandText;
     }
 
-    public void setCommand(String command) {
-        this.command = command;
+    public void setCommandText(String commandText) {
+        this.commandText = commandText;
     }
 
-    public boolean isDone() {
-        return isDone;
+    public boolean isCompleted() {
+        return isCompleted;
     }
 
-    public void setDone(boolean done) {
-        isDone = done;
+    public void setCompleted(boolean completed) {
+        isCompleted = completed;
     }
 
     public String getUserResponse() {
@@ -57,11 +57,12 @@ public class Command {
         this.userResponse = userResponse;
     }
 
-    public Command(Long id, Long userid, String command, boolean isDone, String userResponse) {
+
+    public Command(Long id, Long userID, String commandText, boolean isCompleted, String userResponse) {
         this.id = id;
-        this.userid = userid;
-        this.command = command;
-        this.isDone = isDone;
+        this.userID = userID;
+        this.commandText = commandText;
+        this.isCompleted = isCompleted;
         this.userResponse = userResponse;
     }
 }

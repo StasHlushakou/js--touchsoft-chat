@@ -13,8 +13,8 @@ public class User {
 
     @Column(unique=true)
     private String name;
-    private String botname;
     private boolean isOnline;
+    private String botName;
 
     public User() {}
 
@@ -35,14 +35,6 @@ public class User {
         this.name = name;
     }
 
-    public String getBotname() {
-        return botname;
-    }
-
-    public void setBotname(String botname) {
-        this.botname = botname;
-    }
-
     public boolean isOnline() {
         return isOnline;
     }
@@ -51,10 +43,18 @@ public class User {
         isOnline = online;
     }
 
-    public User(Long id, String name, String botname, boolean isOnline) {
+    public String getBotName() {
+        return botName;
+    }
+
+    public void setBotName(String botName) {
+        this.botName = botName;
+    }
+
+    public User(Long id, String name, boolean isOnline, String botName) {
         this.id = id;
         this.name = name;
-        this.botname = botname;
         this.isOnline = isOnline;
+        this.botName = botName;
     }
 }

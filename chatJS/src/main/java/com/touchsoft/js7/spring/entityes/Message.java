@@ -11,9 +11,10 @@ public class Message {
     private Long id;
 
     private String text;
-    private Long userid;
-    private boolean isRead;
-    private String username;
+    private Long userID;
+    private boolean isReadUser;
+    private boolean isReadAdmin;
+    private String senderName;
     private String time;
 
 
@@ -36,28 +37,36 @@ public class Message {
         this.text = text;
     }
 
-    public Long getUserid() {
-        return userid;
+    public Long getUserID() {
+        return userID;
     }
 
-    public void setUserid(Long userid) {
-        this.userid = userid;
+    public void setUserID(Long userID) {
+        this.userID = userID;
     }
 
-    public boolean isRead() {
-        return isRead;
+    public boolean isReadUser() {
+        return isReadUser;
     }
 
-    public void setRead(boolean isRead) {
-        this.isRead = isRead;
+    public void setReadUser(boolean readUser) {
+        isReadUser = readUser;
     }
 
-    public String getUsername() {
-        return username;
+    public boolean isReadAdmin() {
+        return isReadAdmin;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setReadAdmin(boolean readAdmin) {
+        isReadAdmin = readAdmin;
+    }
+
+    public String getSenderName() {
+        return senderName;
+    }
+
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
     }
 
     public String getTime() {
@@ -68,12 +77,13 @@ public class Message {
         this.time = time;
     }
 
-    public Message(Long id, String text, Long userid, boolean isRead, String username, String time) {
+    public Message(Long id, String text, Long userID, boolean isReadUser, boolean isReadAdmin, String senderName, String time) {
         this.id = id;
         this.text = text;
-        this.userid = userid;
-        this.isRead = isRead;
-        this.username = username;
+        this.userID = userID;
+        this.isReadUser = isReadUser;
+        this.isReadAdmin = isReadAdmin;
+        this.senderName = senderName;
         this.time = time;
     }
 }
