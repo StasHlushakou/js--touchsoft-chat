@@ -1,5 +1,6 @@
 package com.touchsoft.js7.spring.controller;
 
+import com.google.gson.Gson;
 import com.touchsoft.js7.spring.entityes.User;
 import com.touchsoft.js7.spring.repositoryes.MessageRepository;
 import com.touchsoft.js7.spring.repositoryes.UserRepository;
@@ -44,8 +45,6 @@ public class UsersController {
 
     }
 
-
-
     @GetMapping("/online")
     public Iterable<User> getOnlineUsers() {
 
@@ -55,11 +54,14 @@ public class UsersController {
 
 
 
+    @RequestMapping(headers = {"content-type=text/plain; charset=UTF-8"})
+    @PostMapping
+    public void saveSendBeaconData (@RequestBody String data) {
 
+        User user = new Gson().fromJson(data, User.class);
+        userRepository.save(user);
 
-
-
-
+    }
 
 
 }

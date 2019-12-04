@@ -1,3 +1,5 @@
+'use strict';
+let chatLS = {};
 init();
 
 /**
@@ -14,7 +16,7 @@ function minimizeButton() {
  * Handles the push of a message send button
  */
 function sendButton() {
-    // проверка ввода имени пользователя и его регистрация, если требуется
+    // Verify username if required
     if (!chatLS.userName){
         if (message.value != ""){
             chatLS.userName = message.value;
@@ -37,11 +39,16 @@ function sendButton() {
 }
 
 /**
- * Handles the push of a message send button
+ * 
  */
-window.onunload = function() {
-  setOnlineUserStatus(chatLS.user, false, true)
+window.onunload = function () {
+  	if (chatLS.user){
+		chatLS.user.online = false;
+  		var blob = new Blob([JSON.stringify(chatLS.user)], {type: 'text/plain; charset=UTF-8'});
+		navigator.sendBeacon(TSChat.chatURL + "/users", blob);
+	}
 };
+
 
 function saveInfoToSessionStorage(){
 
@@ -53,11 +60,10 @@ function saveInfoToSessionStorage(){
  * Sends a message to the server to set the user status online / offline.
  * @param {string} user - The user whose status is to be set.
  * @param {boolean} status - Status online/offline.
- * @param {boolean} keepalive - Run a query in the background after the user leaves the page.
  */
-function setOnlineUserStatus(user, status, keepalive){
+function setOnlineUserStatus(user, status){
 	user.online = status;
-	requestToServer("POST", TSChat.chatURL + "/users", user, null, keepalive);
+	requestToServer("POST", TSChat.chatURL + "/users", user, null);
 }
 
 
@@ -79,10 +85,11 @@ function setReadMessageStatus(message){
 
 // запись в поле вывода сообщения
 function writeToMessageOutput(message) {
+    let isRead = message.readAdmin ? "Прочитано    " : "Не прочитано ";
     if (TSChat.showTime){
-        messageOutput.value += message.time + " " + message.senderName + ":" + message.text + "\n";
+        messageOutput.value += isRead + message.time + " " + message.senderName + ":" + message.text + "\n";
     } else{
-        messageOutput.value += message.senderName + ":" + message.text + "\n";
+        messageOutput.value += isRead + message.senderName + ":" + message.text + "\n";
     }
     chatLS.messages = messageOutput.value;
     saveInfoToSessionStorage();
@@ -109,6 +116,7 @@ function setUser(user){
 	saveInfoToSessionStorage();
 	dounloadHistoryMessages(user);
 	chatLS.user.online = true;
+	chatLS.user.botName = TSChat.botName;
 	setOnlineUserStatus(chatLS.user, true, false);
 }
 
@@ -116,7 +124,6 @@ function setUser(user){
 function regNewUser(username){
 	let user = {};
 	user.name = username;
-	user.botname = TSChat.botName;
 	requestToServer("POST", TSChat.chatURL + "/users/reg", user, setUser);
 }
 
@@ -127,18 +134,18 @@ function sendMessageToServer(message){
 }
 
 // реализация отправки запроса на сервер
-function requestToServer(method, url, json, func, keepalive) {    
+function requestToServer(method, url, json, func, command) {    
     if (TSChat.connectType == "xhr"){
-    	xhrRequestToServer(method, url, json, func, keepalive);
+    	xhrRequestToServer(method, url, json, func, command);
     }else {
-    	fetchRequestToServer(method, url, json, func, keepalive)
+    	fetchRequestToServer(method, url, json, func, command)
     }
 }
 
 // функция создания xhr-запроса
-function xhrRequestToServer(method, url, json, func, keepalive) {    
+function xhrRequestToServer(method, url, json, func, command) {    
     let xhr = new XMLHttpRequest();
-    xhr.open(method, url, !keepalive);
+    xhr.open(method, url);
     xhr.setRequestHeader('Content-Type', 'application/json;charset=utf-8');
     if (json != null){
     	xhr.send(JSON.stringify(json));
@@ -148,7 +155,7 @@ function xhrRequestToServer(method, url, json, func, keepalive) {
     xhr.onload = function() {
         if (func != null){
 	        let jsonResp = JSON.parse(xhr.response);
-	        func(jsonResp);
+	        func(jsonResp, command);
         }
     };
     xhr.onerror = function() { 
@@ -157,12 +164,12 @@ function xhrRequestToServer(method, url, json, func, keepalive) {
 }
 
 // функция создания fetch-запроса
-async function fetchRequestToServer(method, url, json, func, keepalive) {
+async function fetchRequestToServer(method, url, json, func, command) {
 	if (method == "GET"){
 		let response = await fetch(url);
 	    if (response.ok) { 
 	      let jsonResp = await response.json();
-	      func(jsonResp);
+	      func(jsonResp, command);
 	      
 	    } else {
 	      console.log("Ошибка HTTP: " + response.status);
@@ -173,8 +180,7 @@ async function fetchRequestToServer(method, url, json, func, keepalive) {
 	        headers: {
 	            'Content-Type': 'application/json;charset=utf-8'
 	        },
-	        body: JSON.stringify(json),
-	        keepalive : keepalive
+	        body: JSON.stringify(json)
 	    });
 	    if (response.ok) { 
 	      if (func != null){
@@ -190,14 +196,14 @@ async function fetchRequestToServer(method, url, json, func, keepalive) {
 }
 
 function updateMessages(){
-	if (chatLS.userName){
+	if (chatLS.user){
 		requestToServer("GET", TSChat.chatURL + "/messages/users/userunread/" + chatLS.user.id , null, addHistoryMessages);
 	}
 }
 
 
 function updateCommands(){
-	if (chatLS.userName){
+	if (chatLS.user){
 		requestToServer("GET", TSChat.chatURL + "/commands/users/notcompleted/" + chatLS.user.id , null, executeCommands);
 	}
 }
@@ -209,23 +215,32 @@ function executeCommands(commandsArr){
 
 function executeCommand(command){
 	if (command.commandText == "getUserInfo"){
-		alert("запрос ip");
-		requestToServer("GET", "https://geolocation-db.com/json", null , setComandStatus);
-	} else {
-		//alert("запрос modalnogo okna");
+		console.log("getUserInfo");
+		if (command.commandParam == "ipinfo"){
+			requestToServer("GET", "https://ipinfo.io/json/", null , setComandStatus, command);
+
+		} else if (command.commandParam == "ip-api"){
+			requestToServer("GET", "http://ip-api.com/json/", null , setComandStatus, command);
+
+		} else if (command.commandParam == "geoip-db"){
+			requestToServer("GET", "https://geolocation-db.com/json/", null , setComandStatus, command);
+		} else {
+			console.log("неверные параметры");
+		}
+		
+	} else if (command.commandText == "reqInfo"){
+		console.log("reqInfo");
+		command.commandParam
+
+
 	}
 }
 
-//requestToServer(method, url, json, func, keepalive)
-
-
-function setComandStatus(userResponse){
-	console.log(userResponse);
-	//command.userResponse = userResponse;
-	//requestToServer("POST", TSChat.chatURL + "/commands", command , null);
+function setComandStatus(userResponse, command){
+	command.userResponse = JSON.stringify(userResponse);
+	command.completed = true;
+	requestToServer("POST", TSChat.chatURL + "/commands", command , null);
 }
-
-
 
 function Message (text, readUser, readAdmin){
 	let date = new Date();
@@ -268,7 +283,6 @@ function init(){
 
 	// загрузка сохранённых данных из локального хранилища
 	if (!sessionStorage.getItem('chatLS')){
-		chatLS = {};
 		chatLS.isHidden = true;
 		chatLS.messages = "";
 		//проверка требования ввода имени
@@ -342,5 +356,4 @@ function init(){
 	let msgUpdate = setInterval(updateMessages, 1000);
 	let commandUpdate = setInterval(updateCommands, 1000);
 }
-
 

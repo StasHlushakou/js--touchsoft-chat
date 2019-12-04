@@ -12,7 +12,10 @@ public class Command {
 
     private Long userID;
     private String commandText;
+    private String commandParam;
     private boolean isCompleted;
+
+    @Column(length = 400)
     private String userResponse;
 
     public Command() {}
@@ -57,11 +60,19 @@ public class Command {
         this.userResponse = userResponse;
     }
 
+    public String getCommandParam() {
+        return commandParam;
+    }
 
-    public Command(Long id, Long userID, String commandText, boolean isCompleted, String userResponse) {
+    public void setCommandParam(String commandParam) {
+        this.commandParam = commandParam;
+    }
+
+    public Command(Long id, Long userID, String commandText, String commandParam, boolean isCompleted, String userResponse) {
         this.id = id;
         this.userID = userID;
         this.commandText = commandText;
+        this.commandParam = commandParam;
         this.isCompleted = isCompleted;
         this.userResponse = userResponse;
     }
