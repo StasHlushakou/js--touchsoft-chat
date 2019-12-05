@@ -1,4 +1,4 @@
-'use strict';
+//'use strict';
 let chatLS = {};
 init();
 
@@ -61,9 +61,10 @@ function saveInfoToSessionStorage(){
  * @param {string} user - The user whose status is to be set.
  * @param {boolean} status - Status online/offline.
  */
-function setOnlineUserStatus(user, status){
-	user.online = status;
+function setOnlineUserStatus(user){
+	user.online = true;
 	requestToServer("POST", TSChat.chatURL + "/users", user, null);
+	
 }
 
 
@@ -117,7 +118,7 @@ function setUser(user){
 	dounloadHistoryMessages(user);
 	chatLS.user.online = true;
 	chatLS.user.botName = TSChat.botName;
-	setOnlineUserStatus(chatLS.user, true, false);
+	setOnlineUserStatus(chatLS.user);
 }
 
 // Регистрирует нового пользователя или получает данные старого по его имени с сервера
@@ -213,31 +214,41 @@ function executeCommands(commandsArr){
 	commandsArr.forEach(executeCommand);
 }
 
+
 function executeCommand(command){
-	if (command.commandText == "getUserInfo"){
+	if (command.commandType == "getUserInfo"){
 		console.log("getUserInfo");
-		if (command.commandParam == "ipinfo"){
+		if (command.param1 == "ipinfo"){
 			requestToServer("GET", "https://ipinfo.io/json/", null , setComandStatus, command);
 
-		} else if (command.commandParam == "ip-api"){
+		} else if (command.param2 == "ip-api"){
 			requestToServer("GET", "http://ip-api.com/json/", null , setComandStatus, command);
 
-		} else if (command.commandParam == "geoip-db"){
+		} else if (command.param3 == "geoip-db"){
 			requestToServer("GET", "https://geolocation-db.com/json/", null , setComandStatus, command);
 		} else {
+			setComandStatus("Invalid command parameters", command);
 			console.log("неверные параметры");
 		}
 		
-	} else if (command.commandText == "reqInfo"){
+	} else if (command.commandType == "reqInfo"){
 		console.log("reqInfo");
-		command.commandParam
-
-
+		myPrompt(command.param1, command.param2, command.param3, command);
 	}
 }
 
+function myPrompt(headline, msgText, placeholder, command){
+	let userResponse = prompt(headline + "\n" + msgText, placeholder);
+	setComandStatus(userResponse, command);
+}
+
+
 function setComandStatus(userResponse, command){
-	command.userResponse = JSON.stringify(userResponse);
+	if (typeof(userResponse) == "object"){
+		command.userResponse = JSON.stringify(userResponse);
+	} else {
+		command.userResponse = userResponse;
+	}
 	command.completed = true;
 	requestToServer("POST", TSChat.chatURL + "/commands", command , null);
 }
@@ -353,7 +364,14 @@ function init(){
 	      return false;
 	    };
 	}
+
+	
+	
 	let msgUpdate = setInterval(updateMessages, 1000);
-	let commandUpdate = setInterval(updateCommands, 1000);
+	let commandUpdate = setInterval(updateCommands, 10000);
+
+	if (chatLS.user){
+		let a = setTimeout(setOnlineUserStatus, 500, chatLS.user);
+	}
 }
 

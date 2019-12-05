@@ -92,3 +92,54 @@ h2{
 	top : 30px;
 	left : 515px;
 }
+
+#commandSort {
+	width: 180px; 
+	height: 25px; 
+	position: absolute;
+	left :10px ; 
+	top : 30px;
+}
+
+#btnCommand{
+	position: absolute;
+	right :10px ; 
+	top : 30px;
+}
+
+#commandSortGetUserInfo {
+	position: absolute;
+	left :200px ; 
+	top : 30px;
+}
+
+#commandSortReqInfo{
+	position: absolute;
+	left :10px ; 
+	top : 65px;
+}
+
+#param1{
+	width: 176px; 
+	height: 19px; 
+}
+
+#param2{
+	width: 178px; 
+	height: 19px; 
+}
+#param3{
+	width: 176px; 
+	height: 19px; 
+}
+
+
+
+
+#commandOutput{
+	width: 544px; 
+	height: 389px; 
+	position: absolute;
+	left :10px ; 
+	top : 100px;
+}

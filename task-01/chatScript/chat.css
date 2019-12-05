@@ -1,4 +1,4 @@
-.touch-soft-chat, #chatWindow { 
+.touch-soft-chat#chatWindow { 
 	width: 360px; 
 	min-height: 25px;
 	background-color: Gray;
@@ -42,4 +42,16 @@
 	position : absolute;
 	right: 2px;
 	bottom : 2px;
+}
+
+.touch-soft-chat#promptContainer{
+  
+	width: 360px; 
+	min-height: 297px;
+	background-color: green;
+	border: 4px double black; 
+	position : fixed;
+	bottom : 5px;
+	right : 5px;
+
 }

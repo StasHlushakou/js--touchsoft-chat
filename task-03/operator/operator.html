@@ -1,62 +1,77 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
+    <meta charset="UTF-8">
 </head>
 <body>
 
   
 
-  <div id="dashboard">
+<div id="dashboard">
     <h2>Operators dashboard</h2>
     
     <input id="filter" type="text" placeholder="Filter">
     
-    
-    
+
     <select id="sort">
-          <option value="id">id</option>
-          <option value="name">Name</option>
-          <option value="online">Online</option>
+        <option value="id">id</option>
+        <option value="name">Name</option>
+        <option value="online">Online</option>
     </select>
     
 
-    <select id="userSelect" multiple >   
-
-    </select>
+    <select id="userSelect" multiple ></select>
 
 
     <div id="activeUser" hidden>
-      <h2>Active user</h2>
+        <h2>Active user</h2>
 
-      <input id="closeActiveUser" type="button" value="x" onclick="closeActiveUser()">
+        <input id="closeActiveUser" type="button" value="x" onclick="closeActiveUser()">
 
-      <div id="chat" >
-        <h2>Chat</h2>
-        <textarea id="messageOutput" disabled="disabled" ></textarea>
-        <textarea id="message" rows="3" cols="40"></textarea>
-        <input id="btnSend" type="button" value="Send" onclick="sendButton()">
-      </div>
-
-
-      <div id="control">
-        <h2>Control</h2>
-      </div>
-
-    </div>
+        <div id="chat" >
+            <h2>Chat</h2>
+            <textarea id="messageOutput" disabled="disabled" ></textarea>
+            <textarea id="message" rows="3" cols="40"></textarea>
+            <input id="btnSend" type="button" value="Send" onclick="sendButton()">
+        </div>
 
 
+        <div id="control">
+            <h2>Control</h2>
+
+            <select id="commandSort">
+                <option value="getUserInfo">get info about user ip</option>
+                <option value="reqInfo">request info from the user</option>
+            </select>
+
+            <input id="btnCommand" type="button" value="Run" onclick="runCommandBtn()">
+
+            <div id="commandSortGetUserInfo">
+                <input id="ipinfo" type="radio" name= "getUserInfo" value="ipinfo" checked> ipinfo
+                <input id="ipApi" type="radio" name= "getUserInfo" value="ip-api"> ip-api
+                <input id="geoipDb" type="radio" name= "getUserInfo" value="geoip-db"> geoip-db
+            </div>
+
+            <div id="commandSortReqInfo" hidden>
+                <input id="param1" type="text" placeholder="Window title">
+                <input id="param2" type="text" placeholder="Message text">
+                <input id="param3" type="text" placeholder="placeholder">
+            </div>
+
+            <textarea id="commandOutput" disabled="disabled" ></textarea>
+
+        </div>
 
     
-      
-
-
-
-
     </div>
 
 
-  </div>
+
+
+</div>
+
+
+
   
 
 
@@ -64,8 +79,8 @@
 
 
 
-  <link href="operator.css" rel="stylesheet">
-  <script src="operator.js"></script>
+<link href="operator.css" rel="stylesheet">
+<script src="operator.js"></script>
 
 </body>
 </html>
