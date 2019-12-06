@@ -1,6 +1,6 @@
 let operator = {};
 operator.chatURL = "http://localhost:8080";
-operator.connectType = "xhr";
+operator.connectType = "fetch";
 operator.users = [];
 operator.selectUser = {};
 operator.isUpdateMessages = false;
@@ -35,14 +35,14 @@ function runCommandBtn(){
     let command;
     if (comSort == "getUserInfo"){
         if (comSortRadio == 1){
-            command = (comSort, "ipinfo" , null, null);
+            command = new Command(comSort, "ipinfo" , null, null);
         } else if (comSortRadio == 2){
-            command = (comSort, null , "ip-api", null);
+            command = new Command(comSort, null , "ip-api", null);
         }else if (comSortRadio == 3){
-            command = (comSort, null , null, "geoip-db");
+            command = new Command(comSort, null , null, "geoip-db");
         }
     } else if (comSort == "reqInfo"){
-        command = (comSort, param1.value , param2.value, param3.value);
+        command = new Command(comSort, param1.value , param2.value, param3.value);
     } else{
         return;
     }
@@ -52,7 +52,7 @@ function runCommandBtn(){
 // Отправить сообщение на сервер
 function sendCommandToServer(command){
     
-    requestToServer("POST", operator.chatURL + "/commands", command, null);
+    requestToServer("POST", operator.chatURL + "/commands/", command, null);
 }
 
 
@@ -208,7 +208,9 @@ function requestToServer(method, url, json, func, command) {
 function xhrRequestToServer(method, url, json, func, command) {    
     let xhr = new XMLHttpRequest();
     xhr.open(method, url);
-    xhr.setRequestHeader('Content-Type', 'application/json;charset=utf-8');
+    if (method == "POST"){
+        xhr.setRequestHeader('Content-Type', 'application/json;charset=utf-8');
+    }
     if (json != null){
         xhr.send(JSON.stringify(json));
     } else{
@@ -311,8 +313,9 @@ function updateMessages(){
 // инициализация скрипта при первой загрузке или перезагрузке страницы
 function init(){
     updateUsers();
-    let timerUpdateUsers = setInterval(updateUsers, 5000);
+    let timerUpdateUsers = setInterval(updateUsers, 1000);
     let timerUpdateMessages = setInterval(updateMessages, 1000);
+    let timerUpdateCommands = setInterval(updateCommands, 1000);
 }
 
 
@@ -350,3 +353,49 @@ function saveInfoToSessionStorage(){
     sessionStorage.chatLS = JSON.stringify(chatLS);
 }
 */
+
+
+// запись в поле вывода сообщения
+function writeToHistoryCommands(command) {
+    let isComplet = command.completed ? "Выполнено   " : "Не выполнено";
+    let body = "";
+    if (command.commandType == "getUserInfo"){
+        body += "Info about user from ";
+        if(command.param1 == "ipinfo"){
+            body +="ipinfo servise : " + "\n" + command.userResponse;
+        } else if(command.param2 == "ip-api"){
+            body +="ip-api servise : " + "\n" + command.userResponse;
+        } else if(command.param3 == "geoip-db"){
+            body += "geoip-db servise : " + "\n" + command.userResponse;
+        } else{
+            body = "bad request"
+        }
+    } else if (command.commandType == "reqInfo"){
+        body += "Window title:" + command.param1 + "; Message text:" + command.param2  + 
+        "; placeholder:" + command.param3 + ";\nuser response:" + command.userResponse;
+
+    } else{
+        body = "bad request"
+    }
+
+    commandOutput.value += isComplet + " " + command.time + " " + body + "\n\n";
+}
+
+// Загружает историю сообщений переданного пользователя
+function dounloadHistoryCommands(user){
+    
+    requestToServer("GET", operator.chatURL + "/commands/users/" + user.id, null, addHistoryCommands);
+}
+
+// Добавляет все сообщения из массива в поле вывода
+function addHistoryCommands(commandsArr){
+    commandOutput.value = "";
+    commandsArr.forEach(writeToHistoryCommands);
+}
+
+
+function updateCommands(){
+    if (operator.isUpdateMessages){
+        dounloadHistoryCommands(operator.selectUser);
+    } 
+}

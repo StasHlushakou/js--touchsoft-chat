@@ -139,6 +139,7 @@ h2{
 #commandOutput{
 	width: 544px; 
 	height: 389px; 
+	resize: none;
 	position: absolute;
 	left :10px ; 
 	top : 100px;

@@ -33,7 +33,7 @@ function sendButton() {
     if (message.value != ""){
         let msg = new Message(message.value, true, false);
         sendMessageToServer(msg);
-        writeToMessageOutput(msg);
+        //writeToMessageOutput(msg);
         message.value = "";
     }
 }
@@ -101,7 +101,7 @@ function writeToMessageOutput(message) {
 
 // Добавляет все сообщения из массива в поле вывода
 function addHistoryMessages(messagesArr){
-
+	messageOutput.value = "";
 	messagesArr.forEach(writeToMessageOutput);
 }
 
@@ -147,7 +147,9 @@ function requestToServer(method, url, json, func, command) {
 function xhrRequestToServer(method, url, json, func, command) {    
     let xhr = new XMLHttpRequest();
     xhr.open(method, url);
-    xhr.setRequestHeader('Content-Type', 'application/json;charset=utf-8');
+    if (method == "POST"){
+    	xhr.setRequestHeader('Content-Type', 'application/json;charset=utf-8');
+    }
     if (json != null){
     	xhr.send(JSON.stringify(json));
     } else{
@@ -198,7 +200,8 @@ async function fetchRequestToServer(method, url, json, func, command) {
 
 function updateMessages(){
 	if (chatLS.user){
-		requestToServer("GET", TSChat.chatURL + "/messages/users/userunread/" + chatLS.user.id , null, addHistoryMessages);
+		//requestToServer("GET", TSChat.chatURL + "/messages/users/userunread/" + chatLS.user.id , null, addHistoryMessages);
+		requestToServer("GET", TSChat.chatURL + "/messages/users/" + chatLS.user.id, null, addHistoryMessages);
 	}
 }
 
