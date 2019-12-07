@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+
+<div id="chatConfigurator">
+  <h2>Chat Configurator</h2>
+    <table>
+    	<tr>
+    		<td>Chat title</td>
+    		<td> 
+    			<input id="chatTitleInput" type="text" placeholder="Chat">
+    		</td>
+    	</tr>
+    	<tr>
+    		<td>Bot name</td>
+    		<td> 
+    			<input id="botNameInput" type="text" placeholder="Bot">
+    		</td>
+    	</tr>
+    	<tr>
+    		<td>Chat URL</td>
+    		<td> 
+    			<input id="chatURLInput" type="text" placeholder="http://localhost:8080/chatJS">
+    		</td>
+    	</tr>
+    	<tr>
+    		<td>CSS class</td>
+    		<td> 
+    			<input id="CSSClassInput" type="text" placeholder="model.css">
+    		</td>
+    	</tr>
+    	<tr>
+    		<td>Position</td>
+    		<td>
+    			<select id="positionInput">
+    				<option value="right">Right</option>
+    				<option value="left">Left</option>
+    		    </select>
+    		</td>
+    	</tr>
+    	<tr>
+    		<td>UI</td>
+    		<td>
+    			<p><input id="allowMinimizeInput" type="checkbox"> Allow to minimize </p>
+    			<p><input id="allowDragInput" type="checkbox"> Allow drag </p>
+    			<p><input id="requireNameInput" type="checkbox"> Require name </p>
+    			<p><input id="showTimeInput" type="checkbox"> Show Date/time </p>
+    			
+    		</td>
+    	</tr>
+    	<tr>
+    		<td>Network</td>
+    		<td>
+    			<p><input id="useXHRInput" type="radio" name= "network" value="xhr" checked> XHR </p>
+    			<p><input id="usefetchInput" type="radio" name= "network" value="fetch"> fetch </p>
+    		</td>
+    	</tr>
+    </table>
+    <p>Use next code:</p>
+    <p>
+    	<textarea id="scriptToConnection" disabled="disabled" ></textarea>	
+    </p>
+
+    <link href="config.css" rel="stylesheet">
+    <script type="text/javascript" src="config.js" id="connectionScript" ></script>
+
+</div>
+
+</body>
+
+</html>
