@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <link rel="stylesheet" type="text/css" href="spa.css">
+  <link href="operator/operator.css" rel="stylesheet">
+  <link href="configScript/config.css" rel="stylesheet">
+
 </head>
 <body>
 
@@ -14,13 +17,60 @@
 	<a href="/task-03/operator/operator.html">03</a>
 	<a href="/task-05/SPA/spa.html">05</a>
 -->
-	<input id="btnSend" type="button" value="Configuration" onclick="viewConfiguration()">
-	<input id="btnSend" type="button" value="Dashboard" onclick="viewDashboard()">
-	<input id="btnSend" type="button" value="About" onclick="viewAbout()">
+
+
+	<input id="viewDashboard" type="button" value="Dashboard" onclick="viewDashboard()">
+	<input id="viewConfiguration" type="button" value="Configuration" onclick="viewConfiguration()">
+	<input id="viewAbout" type="button" value="About" onclick="viewAbout()">
 
 	<div id="pageContent">
 		
-		<div id="chatConfigurator" hidden="true">
+
+
+		<div id="dashboard" hidden>
+		    <h2>Operators dashboard</h2>
+		    <input id="filter" type="text" placeholder="Filter">
+		    <select id="sort">
+		        <option value="id">id</option>
+		        <option value="name">Name</option>
+		        <option value="online">Online</option>
+		    </select>
+		    <select id="userSelect" multiple ></select>
+		    <div id="activeUser" hidden>
+		        <h2>Active user</h2>
+		        <input id="closeActiveUser" type="button" value="x" onclick="closeActiveUser()">
+		        <div id="chat" >
+		            <h2>Chat</h2>
+		            <textarea id="messageOutput" disabled="disabled" ></textarea>
+		            <textarea id="message" rows="3" cols="40"></textarea>
+		            <input id="btnSend" type="button" value="Send" onclick="sendButton()">
+		        </div>
+		        <div id="control">
+		            <h2>Control</h2>
+
+		            <select id="commandSort">
+		                <option value="getUserInfo">get info about user ip</option>
+		                <option value="reqInfo">request info from the user</option>
+		            </select>
+		            <input id="btnCommand" type="button" value="Run" onclick="runCommandBtn()">
+		            <div id="commandSortGetUserInfo">
+		                <input id="ipinfo" type="radio" name= "getUserInfo" value="ipinfo" checked> ipinfo
+		                <input id="ipApi" type="radio" name= "getUserInfo" value="ip-api"> ip-api
+		                <input id="geoipDb" type="radio" name= "getUserInfo" value="geoip-db"> geoip-db
+		            </div>
+		            <div id="commandSortReqInfo" hidden>
+		                <input id="param1" type="text" placeholder="Window title">
+		                <input id="param2" type="text" placeholder="Message text">
+		                <input id="param3" type="text" placeholder="placeholder">
+		            </div>
+		            <textarea id="commandOutput" disabled="disabled" ></textarea>
+		        </div>
+		    </div>
+		</div>
+
+
+
+		<div id="chatConfigurator" hidden>
 		  <h2>Chat Configurator</h2>
 		    <table>
 		    	<tr>
@@ -78,10 +128,13 @@
 		    <p>
 		    	<textarea id="scriptToConnection" disabled="disabled" ></textarea>	
 		    </p>
-
-		    
 		</div>	
 
+		<div id="about" >
+			<p>Author : Stanislau Hlushakou</p>
+			<p>email : stas.hlushakou@gmail.com</p>
+			<p>This project is the implementation of laboratory work at ToucSoft-company.</p>
+		</div>
 
 
 
@@ -90,12 +143,12 @@
 	</div>
 
 
-
-	<link href="config.css" rel="stylesheet">
-	<script type="text/javascript" src="config.js" id="connectionScript" ></script>
-
-
 	<script type="text/javascript" src="spa.js"></script>
+	<script src="operator/operator.js"></script>
+	<script type="text/javascript" src="configScript/config.js" id="connectionScript" ></script>
+
+
+	
 </body>
 </html>
 
