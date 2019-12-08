@@ -26,11 +26,21 @@
 .touch-soft-chat #messageOutput { 
 	width: 350px; 
 	height: 200px; 
-	resize: none;
+	/*resize: none;*/
+	overflow : auto;
 	position : absolute;
 	top : 1px;
 	left: 2px
 }
+
+
+
+.touch-soft-chat-message{
+	position : static;
+}
+
+
+
 .touch-soft-chat #message{
 	resize: none;
 	position : absolute;

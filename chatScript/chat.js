@@ -1,6 +1,9 @@
 //'use strict';
 let chatLS = {};
 init();
+chatLS.messages = [];
+chatLS.updateMessagesFromId = 0;
+let isUpdateCommands = true;
 
 /**
  * Handles clicking a minimize button.
@@ -49,12 +52,10 @@ window.onunload = function () {
 	}
 };
 
-
 function saveInfoToSessionStorage(){
 
 	sessionStorage.chatLS = JSON.stringify(chatLS);
 }
-
 
 /**
  * Sends a message to the server to set the user status online / offline.
@@ -67,33 +68,79 @@ function setOnlineUserStatus(user){
 	
 }
 
-
-
 /**
  * Output service information in the output field.
  * @param {string} str - String from output.
  */
 function addServiceMessage(str){
+	let div = document.createElement('div');
+    div.setAttribute('id', 'message' + message.id);
+
+    div.setAttribute('class', "touch-soft-chat-message");
+	div.append(str);
+	messageOutput.append(div);
+
+    /*
 	messageOutput.value += str + "\n";
 	chatLS.messages = messageOutput.value;
 	saveInfoToSessionStorage();
+	*/
 }
+
 
 function setReadMessageStatus(message){
 	message.readUser = true;
 	sendMessageToServer(message);
 }
 
+
+
+
+
+function updateMessages(){
+	if (chatLS.user){
+		//requestToServer("GET", TSChat.chatURL + "/messages/users/userunread/" + chatLS.user.id , null, addHistoryMessages);
+		requestToServer("GET", TSChat.chatURL + "/messages/users/" 
+			+ chatLS.user.id + "/" + chatLS.updateMessagesFromId, null, addHistoryMessages);
+	}
+}
+
+
+
 // запись в поле вывода сообщения
 function writeToMessageOutput(message) {
-    let isRead = message.readAdmin ? "Прочитано    " : "Не прочитано ";
-    if (TSChat.showTime){
-        messageOutput.value += isRead + message.time + " " + message.senderName + ":" + message.text + "\n";
-    } else{
-        messageOutput.value += isRead + message.senderName + ":" + message.text + "\n";
+	for (let msg of chatLS.messages){
+        if (message.id == msg.id){      	
+            msg.readAdmin = message.readAdmin;
+            let div = document.getElementById('message' + msg.id);
+            if (!msg.readAdmin){
+                div.style.backgroundColor = "#673ab7";
+            } else{
+            	div.style.backgroundColor = "";
+            	chatLS.updateMessagesFromId = message.id;
+            }
+            return;
+        }
     }
-    chatLS.messages = messageOutput.value;
+    chatLS.messages.push(message)
+    let div = document.createElement('div');
+    div.value = message.id;
+    div.setAttribute('id', 'message' + message.id);
+    div.setAttribute('class', "touch-soft-chat-message");
+    if (TSChat.showTime){
+        div.append(message.time + " " + message.senderName + ":" + message.text + "\n");
+    } else{
+        div.append(message.senderName + ":" + message.text + "\n");
+    }
+    if (!message.readAdmin){
+        div.style.backgroundColor = "#673ab7";
+    }else{
+    	div.style.backgroundColor = "";
+    	chatLS.updateMessagesFromId = message.id;
+    }
+    messageOutput.append(div);
     saveInfoToSessionStorage();
+
     if (!message.readUser){
     	setReadMessageStatus(message);       	
     }
@@ -101,7 +148,7 @@ function writeToMessageOutput(message) {
 
 // Добавляет все сообщения из массива в поле вывода
 function addHistoryMessages(messagesArr){
-	messageOutput.value = "";
+	
 	messagesArr.forEach(writeToMessageOutput);
 }
 
@@ -198,22 +245,15 @@ async function fetchRequestToServer(method, url, json, func, command) {
 	}   
 }
 
-function updateMessages(){
-	if (chatLS.user){
-		//requestToServer("GET", TSChat.chatURL + "/messages/users/userunread/" + chatLS.user.id , null, addHistoryMessages);
-		requestToServer("GET", TSChat.chatURL + "/messages/users/" + chatLS.user.id, null, addHistoryMessages);
-	}
-}
-
 
 function updateCommands(){
-	if (chatLS.user){
+	if (chatLS.user && isUpdateCommands){
 		requestToServer("GET", TSChat.chatURL + "/commands/users/notcompleted/" + chatLS.user.id , null, executeCommands);
 	}
 }
 
 function executeCommands(commandsArr){
-	
+	isUpdateCommands = false;
 	commandsArr.forEach(executeCommand);
 }
 
@@ -256,16 +296,7 @@ function setComandStatus(userResponse, command){
 	requestToServer("POST", TSChat.chatURL + "/commands", command , null);
 }
 
-function Message (text, readUser, readAdmin){
-	let date = new Date();
-    this.text = text;
-    this.userID = chatLS.user.id;
-    this.readUser = readUser;
-	this.readAdmin = readAdmin;
-    this.senderName = chatLS.userName;
-    this.time = (date.getHours().toString().length > 1 ? date.getHours() : "0" + date.getHours()) + ":" + 
-    (date.getMinutes().toString().length > 1 ? date.getMinutes() : "0" +date.getMinutes()); 
-}
+
 
 // инициализация скрипта при первой загрузке или перезагрузке страницы
 function init(){
@@ -274,7 +305,7 @@ function init(){
 	    <h2 id="heading">chat</h2>
 	    <input id="minimizeBtn" type="button" value="[]" onclick="minimizeButton()">
 	    <div id="chatMinimize" hidden="true">
-	        <textarea id="messageOutput" disabled="disabled" ></textarea>
+	        <div id="messageOutput"></div>
 	        <textarea id="message" rows="3" cols="40"></textarea>
 	        <input id="btnSend" type="button" value="Send" onclick="sendButton()">
 	    </div>
@@ -371,10 +402,21 @@ function init(){
 	
 	
 	let msgUpdate = setInterval(updateMessages, 1000);
-	let commandUpdate = setInterval(updateCommands, 10000);
+	let commandUpdate = setInterval(updateCommands, 5000);
 
+	//Set user status online in reload page
 	if (chatLS.user){
 		let a = setTimeout(setOnlineUserStatus, 500, chatLS.user);
 	}
 }
 
+function Message (text, readUser, readAdmin){
+	let date = new Date();
+    this.text = text;
+    this.userID = chatLS.user.id;
+    this.readUser = readUser;
+	this.readAdmin = readAdmin;
+    this.senderName = chatLS.userName;
+    this.time = (date.getHours().toString().length > 1 ? date.getHours() : "0" + date.getHours()) + ":" + 
+    (date.getMinutes().toString().length > 1 ? date.getMinutes() : "0" +date.getMinutes()); 
+}

@@ -73,5 +73,21 @@ public class MessagesController {
     }
 
 
+    @GetMapping("/users/{userID}/longpolling/{idGreatThen}")
+    public List<Message> getMessagesWithIdGreaterThanByUserIDLongPolling(@PathVariable final Long userID, @PathVariable final Long idGreatThen) {
+
+        for (int i = 0; i < 20; i++){
+            if (messageRepository.findByUserIDAndIdGreaterThan(userID,idGreatThen).size() == 0){
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                break;
+            }
+        }
+        return messageRepository.findByUserIDAndIdGreaterThan(userID,idGreatThen);
+    }
 
 }
