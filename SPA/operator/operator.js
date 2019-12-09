@@ -2,6 +2,7 @@ let operator = {};
 operator.chatURL = "http://localhost:8080";
 operator.connectType = "fetch";
 operator.users = [];
+operator.messages = [];
 operator.selectUser = {};
 operator.isUpdateMessages = false;
 init();
@@ -30,49 +31,11 @@ commandSort.onchange = function() {
 
 
 
-function runCommandBtn(){
-    let comSort = commandSort.value;
-    let command;
-    if (comSort == "getUserInfo"){
-        if (comSortRadio == 1){
-            command = new Command(comSort, "ipinfo" , null, null);
-        } else if (comSortRadio == 2){
-            command = new Command(comSort, null , "ip-api", null);
-        }else if (comSortRadio == 3){
-            command = new Command(comSort, null , null, "geoip-db");
-        }
-    } else if (comSort == "reqInfo"){
-        command = new Command(comSort, param1.value , param2.value, param3.value);
-    } else{
-        return;
-    }
-    sendCommandToServer(command);
-}
-
-// Отправить сообщение на сервер
-function sendCommandToServer(command){
-    
-    requestToServer("POST", operator.chatURL + "/commands/", command, null);
-}
 
 
 
-function Command (commandType, param1, param2, param3){
-    let date = new Date();
-    this.userID = operator.selectUser.id;
-    this.completed = false;
-    this.commandType = commandType;
-    this.param1 = param1;
-    this.param2 = param2;
-    this.param3 = param3;
-    this.time = (date.getHours().toString().length > 1 ? date.getHours() : "0" + date.getHours()) + ":" + 
-    (date.getMinutes().toString().length > 1 ? date.getMinutes() : "0" +date.getMinutes()); 
-    this.userResponse = null;
-}
 
-
-
-function writeToUsersBorard(user){
+function writeToUsersBoard(user){
     
     for (let us of operator.users){
         if (user.id == us.id){
@@ -101,7 +64,7 @@ function writeToUsersBorard(user){
 
 function addToUsersBoard(users){
     
-    users.forEach(writeToUsersBorard);
+    users.forEach(writeToUsersBoard);
 }
 
 function updateUsers() {
@@ -117,6 +80,7 @@ function updateUsers() {
 
 
 filter.onchange = function() {
+    
     console.log(operator.selectUser.id);
 };
 
@@ -272,10 +236,11 @@ function sendButton() {
     if (message.value != ""){
         //Message (text, readUser, readAdmin){
         let msg = new Message(message.value, false, true);
-        requestToServer("POST", operator.chatURL + "/messages", msg, null);
+        sendMessageToServer(msg);
         message.value = "";
     }
 }
+
 
 
 
@@ -398,4 +363,43 @@ function updateCommands(){
     if (operator.isUpdateMessages){
         dounloadHistoryCommands(operator.selectUser);
     } 
+}
+
+function runCommandBtn(){
+    let comSort = commandSort.value;
+    let command;
+    if (comSort == "getUserInfo"){
+        if (comSortRadio == 1){
+            command = new Command(comSort, "ipinfo" , null, null);
+        } else if (comSortRadio == 2){
+            command = new Command(comSort, null , "ip-api", null);
+        }else if (comSortRadio == 3){
+            command = new Command(comSort, null , null, "geoip-db");
+        }
+    } else if (comSort == "reqInfo"){
+        command = new Command(comSort, param1.value , param2.value, param3.value);
+    } else{
+        return;
+    }
+    sendCommandToServer(command);
+}
+
+// Отправить сообщение на сервер
+function sendCommandToServer(command){
+    
+    requestToServer("POST", operator.chatURL + "/commands/", command, null);
+}
+
+
+function Command (commandType, param1, param2, param3){
+    let date = new Date();
+    this.userID = operator.selectUser.id;
+    this.completed = false;
+    this.commandType = commandType;
+    this.param1 = param1;
+    this.param2 = param2;
+    this.param3 = param3;
+    this.time = (date.getHours().toString().length > 1 ? date.getHours() : "0" + date.getHours()) + ":" + 
+    (date.getMinutes().toString().length > 1 ? date.getMinutes() : "0" +date.getMinutes()); 
+    this.userResponse = null;
 }

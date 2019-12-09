@@ -89,8 +89,10 @@ function addServiceMessage(str){
 
 
 function setReadMessageStatus(message){
-	message.readUser = true;
-	sendMessageToServer(message);
+	if (!message.readUser){
+    	message.readUser = true;
+		sendMessageToServer(message);   	
+    }
 }
 
 
@@ -141,9 +143,7 @@ function writeToMessageOutput(message) {
     messageOutput.append(div);
     saveInfoToSessionStorage();
 
-    if (!message.readUser){
-    	setReadMessageStatus(message);       	
-    }
+    setReadMessageStatus(message);  
 }
 
 // Добавляет все сообщения из массива в поле вывода
