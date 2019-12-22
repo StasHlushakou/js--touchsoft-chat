@@ -3,7 +3,7 @@ let chatLS = {};
 init();
 chatLS.messages = [];
 chatLS.updateMessagesFromId = 0;
-let isUpdateCommands = true;
+let lastUpdateCommandId = null;
 
 /**
  * Handles clicking a minimize button.
@@ -101,7 +101,6 @@ function setReadMessageStatus(message){
 
 function updateMessages(){
 	if (chatLS.user){
-		//requestToServer("GET", TSChat.chatURL + "/messages/users/userunread/" + chatLS.user.id , null, addHistoryMessages);
 		requestToServer("GET", TSChat.chatURL + "/messages/users/" 
 			+ chatLS.user.id + "/" + chatLS.updateMessagesFromId, null, addHistoryMessages);
 	}
@@ -247,13 +246,22 @@ async function fetchRequestToServer(method, url, json, func, command) {
 
 
 function updateCommands(){
-	if (chatLS.user && isUpdateCommands){
-		requestToServer("GET", TSChat.chatURL + "/commands/users/notcompleted/" + chatLS.user.id , null, executeCommands);
+	if(chatLS.user){
+		if (!lastUpdateCommandId){
+			requestToServer("GET", TSChat.chatURL + "/commands/users/notcompleted/" 
+				+ chatLS.user.id , null, executeCommands);
+		}else {
+			requestToServer("GET", TSChat.chatURL + "/commands/users/notcompleted/" 
+				+ chatLS.user.id + "/" + lastUpdateCommandId, null, executeCommands);
+		}
 	}
+	
 }
 
 function executeCommands(commandsArr){
-	isUpdateCommands = false;
+	if (commandsArr.length != 0){
+		lastUpdateCommandId = commandsArr[commandsArr.length - 1].id;
+	}
 	commandsArr.forEach(executeCommand);
 }
 
@@ -402,7 +410,7 @@ function init(){
 	
 	
 	let msgUpdate = setInterval(updateMessages, 1000);
-	let commandUpdate = setInterval(updateCommands, 5000);
+	let commandUpdate = setInterval(updateCommands, 1000);
 
 	//Set user status online in reload page
 	if (chatLS.user){

@@ -14,5 +14,7 @@ public interface CommandRepository extends CrudRepository<Command, Long> {
     // невыполненные команды определённого пользователя
     List<Command> findByUserIDAndIsCompleted(Long userID, boolean isCompleted);
 
+    // команды с id > заданного у определённого пользователя
+    List<Command> findByUserIDAndIsCompletedAndIdGreaterThan(Long userID, boolean isCompleted, Long id);
 
 }

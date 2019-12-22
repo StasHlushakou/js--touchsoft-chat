@@ -41,11 +41,17 @@ public class CommandsController {
     }
 
     @GetMapping("/users/notcompleted/{userID}")
-    public List<Command> getUnreadMessagesByUserID(@PathVariable final Long userID) {
+    public List<Command> getNotCompleteCommandsByUserID(@PathVariable final Long userID) {
 
         return  commandsRepository.findByUserIDAndIsCompleted(userID,false);
 
     }
 
+    @GetMapping("/users/notcompleted/{userID}/{idGreatThen}")
+    public List<Command> getCommandsWithIdGreaterThanByUserID(@PathVariable final Long userID, @PathVariable final Long idGreatThen) {
+
+        return  commandsRepository.findByUserIDAndIsCompletedAndIdGreaterThan(userID, false, idGreatThen);
+
+    }
 
 }
